@@ -41,7 +41,7 @@ jobs:
 ```
 
 Action inputs: `command` (`verify` | `check` | `render` | `anchor`), `golden` (`"true"`), `recompute` (`"false"`),
-`sprint` (for `anchor --sprint` and `export`), `push` (for `anchor`), `summary` (write the result to the job summary),
+`sprint` (for `anchor --sprint`), `push` (for `anchor`), `summary` (write the result to the job summary),
 `engine` (`installed` = the project's `.specify/extensions/auditguard`, else this action's), `working-directory`,
 `args` (extra arguments).
 

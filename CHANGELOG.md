@@ -7,7 +7,7 @@ All notable changes to auditGuard are documented here. The format follows
 ## [0.1.0] - 2026-10-06
 
 First release: the specification "auditGuard for Spec Kit - Specification v1.0" ([docs/specification.md](docs/specification.md),
-with the implementation amendments A1-A13) as a Spec Kit extension.
+with the implementation amendments A1-A16) as a Spec Kit extension.
 
 ### Added
 

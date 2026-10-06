@@ -19,7 +19,10 @@
 | A10 | §7.3 | New keys `golden.git.exclude_paths`, `collectors.git.project_artefacts`, `collectors.scopeguard.timeout`; `explain_paths` no longer contains `audit/**`. | The gates' own output and the trail are not "work" to explain. |
 | A11 | FR-602, FR-604 | The event-level `anchored_at` is the commit where **every** recorded file has the recorded content (G8 recomputes there). G4 labels a never-committed source `unanchored`, an overwritten one `ephemeral`. | Precision of the recompute. |
 | A12 | FR-6xx | Git fields and golden checks require the Spec Kit project to be the root of its git repository; otherwise they are skipped with that reason. | Paths in the trail are project-relative. |
-| A13 | FR-901 | CLI additions: `event <name>` (the runtime events, payload on stdin), `verify --offline` and `--out`. | Used by the event commands and CI. |
+| A13 | FR-901 | CLI additions: `event <name>` (the runtime events, payload on stdin; `guard` is `event pre_tool_use`), `verify --offline`, `--no-render` and `--out`. | Used by the event commands and CI. |
+| A14 | FR-904 | `configure` switches the 20 hooks in `.specify/extensions.yml` according to `integration`, creates an empty `audit/sprints.yml` when missing (there is no template), adds the `.gitattributes` lines and the workstation `.gitignore`, and prints the table. It does **not** switch the 4 agent events: Spec Kit wires them at `specify extension add`; `configure` only reports whether they are wired and whether `guard.enabled` / `sessions.record` are on. | The events dispatcher owns the agent settings file. |
+| A15 | FR-903, §7.3, §7.4 | `local-config.yml` may override `integration`, `render.on_hook`, `render.html_on_hook` and `viewer.*`. `collect` has no `--since` (it is the plug-in collector contract of FR-407 only); `verify` also has `--no-render` (used by the action). | What the implementation exposes. |
+| A16 | §7.5 | `action.yml` inputs: `command` (`verify` default, `check`, `render`, `anchor`), `golden`, `recompute`, `sprint` (default empty = chain heads only, for `anchor`), `push`, `summary`, `engine`, `working-directory`, `args`. The action uploads no artefact (the viewer is published with `actions/upload-pages-artifact`, see `docs/ci.md`) and has no `record` input (`args: "--record"`). Wiring in `docs/ci.md`: pull requests and main → `verify --golden`; main additionally → `anchor --push`. | The published action. |
 
 
 | | |
@@ -496,7 +499,7 @@ re-derives each claim from its source and labels every event `verified`, `unanch
   `anchor`); `3` blocked by policy (a human-only command from an agent context when the guard is
   bypassed and `AUDITGUARD_CONTEXT=agent` is set by the hook commands).
 - **FR-903 Config** `.specify/extensions/auditguard/auditguard-config.yml` (§7.3), committed; unknown
-  keys are errors; `local-config.yml` may override `integration`, `render.on_hook`, `viewer.*`;
+  keys are errors; `local-config.yml` may override `integration`, `render.on_hook`, `render.html_on_hook`, `viewer.*`;
   env `AUDITGUARD_ACTOR`, `AUDITGUARD_MODE`, `AUDITGUARD_INTEGRATION`; CI ignores local overrides.
 - **FR-904 configure** SHALL set the 20 hooks `enabled` according to `integration`, the 4 events
   according to `guard.enabled` and `sessions.record`, write `.gitattributes` entries (FR-204), create
@@ -878,7 +881,7 @@ nothing, repairs nothing and never changes the result of /speckit.{CMD}.
 ```yaml
 # auditGuard configuration
 # Location: .specify/extensions/auditguard/auditguard-config.yml (committed; change through a pull request)
-# Workstation overrides: local-config.yml (integration, render.on_hook, viewer.*). CI reads only this file.
+# Workstation overrides: local-config.yml (integration, render.on_hook, render.html_on_hook, viewer.*). CI reads only this file.
 # After changing integration, guard or sessions: bash .specify/extensions/auditguard/scripts/bash/auditguard.sh configure
 version: 1
 

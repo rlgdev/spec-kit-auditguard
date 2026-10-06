@@ -207,17 +207,19 @@ launchers):
 ```text
 auditguard hook <before_X|after_X|stop|session_start|session_end> [--feature-dir D] [--via hooks|workflow]
 auditguard collect [--feature-dir D | --all]
-auditguard decide <design|implement|pr|spec-change|escalation:<note>|gate:<step>> <approve|reject|accept|defer> --by NAME [--role R] [--reason T]
+auditguard decide <design|implement|pr|spec-change|escalation:<note>|gate:<step>> <approve|reject|accept|defer> --by NAME [--role R] [--reason T] [--feature-dir D]
 auditguard note "<text>" --by NAME [--feature-dir D]
-auditguard sprint list | current | open <id> [--name --start --end --goal] --by NAME | close [<id>] --by NAME
-auditguard anchor [--sprint S] [--push]
-auditguard render [--html] [--sprint S] [--feature-dir D]
+auditguard sprint list | current | open <id> [--name --start --end --goal] [--close-current] --by NAME | close [<id>] --by NAME
+auditguard anchor [--sprint S] [--push] [--by NAME]
+auditguard render [--html] [--sprint S] [--feature-dir D | --all]
 auditguard show [--feature-dir D | --all] [--sprint S] [--stage X] [--kind K] [--actor A] [--open] [--json]
-auditguard verify [--golden] [--recompute] [--offline] [--pack FILE] [--record] [--json] [--out FILE]
+auditguard verify [--sprint S | --all] [--golden] [--recompute] [--offline] [--pack FILE] [--record] [--no-render] [--json] [--out FILE]
 auditguard check [--feature-dir D] [--sprint S] [--json]
 auditguard export --sprint S [--out FILE]
 auditguard serve [--port 8765] [--open]
 auditguard configure [--dry-run]
+auditguard event <session_start|stop|session_end|pre_tool_use>   # agent events, payload on stdin (wired by Spec Kit; `guard` = `event pre_tool_use`)
+auditguard version
 ```
 
 `decide`, `note`, `sprint open|close` and `anchor` are for people: the guard blocks them for agents, and the hook
@@ -242,7 +244,7 @@ rules: { implement_requires_design_signed: true, escalations_decided_before_clos
 ```
 
 [docs/configuration.md](docs/configuration.md) lists every key. Workstation overrides (`integration`,
-`render.*`, `viewer.*`) go in `local-config.yml`; CI ignores them.
+`render.on_hook`, `render.html_on_hook`, `viewer.*`) go in `local-config.yml`; CI ignores them.
 
 ## CI and workflows
 
