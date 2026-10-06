@@ -1,0 +1,28 @@
+# auditGuard sprint register - the source of truth for sprints (order = chronological).
+# Change it through the CLI so every change is also recorded in the audit trail:
+#   auditguard sprint open <id> --name "<name>" --start YYYY-MM-DD --end YYYY-MM-DD --by "<name>"
+#   auditguard sprint close [<id>] --by "<name>"
+version: 1
+sprints:
+  - id: S-2026-21
+    name: Sprint 21
+    start: "2026-10-06"
+    end: "2026-10-17"
+    goal: "Orders: place an order, designed and signed"
+    status: closed
+    opened:
+      by: Roman
+      at: "2026-10-06T08:40:00+02:00"
+    closed:
+      by: Roman
+      at: "2026-10-17T17:00:00+02:00"
+      seal: 62330b27d391c45533ef96aadb02f05ca9bbd3e06e3abf7ced12f8876e2f856a
+  - id: S-2026-22
+    name: Sprint 22
+    start: "2026-10-20"
+    end: "2026-10-31"
+    goal: "Orders implemented and approved; refunds designed"
+    status: open
+    opened:
+      by: Roman
+      at: "2026-10-20T08:30:00+02:00"

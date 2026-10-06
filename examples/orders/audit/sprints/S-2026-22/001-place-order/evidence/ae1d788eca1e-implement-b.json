@@ -1,0 +1,95 @@
+{
+  "tool": "archiguard",
+  "version": "0.1.0",
+  "command": "speckit.implement",
+  "step": "b",
+  "run": "step",
+  "mode": "enforce",
+  "feature": "specs/001-place-order",
+  "commit": "7785d120c8d91b220ee982f09882ba06104a39e6",
+  "dirty": true,
+  "artefacts": {
+    "spec.md": "803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e",
+    "plan.md": "cad693b0764d2484ce29c0ae68fcfea9431a23a2fea9ce2fdde50fd20839de7c",
+    "data-model.md": "b01b91188ee48a8c2f586b865755aae59c06688c978baeb4521a8813f9176233",
+    "tasks.md": "5ac298d959cfb475b33d9466c09351cf762e28ec2e0382fcfed6e2f4d1cd7909",
+    "handover.yml": "85df34915da92549df237e52a227f9fc0664eb0e5c94f84abc123ad7e17c6ba8",
+    "contracts/orders.yaml": "779837d14035855493df15a9caa53260335e08a027842f13265bdcfef4fb7fa3"
+  },
+  "pins": {
+    "rulebook": "acme-standards@v2026.10.1",
+    "lock": "sha256:b9afb89e07088d950d48aa197ba10ecfb0597a91024290bb93acee325863eff2",
+    "domain_map": "1.4.0",
+    "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
+  },
+  "iteration": 1,
+  "max_iterations": 3,
+  "status": "pass",
+  "escalation": null,
+  "gates": [
+    {
+      "gate": "scope",
+      "check": "implement",
+      "name": "carrying tasks done",
+      "mode": "enforce",
+      "repair": true,
+      "status": "pass",
+      "blocking": 0,
+      "advisory": 0,
+      "waived": 0,
+      "error": null,
+      "verdict": "gates/scope/implement.json"
+    },
+    {
+      "gate": "A4",
+      "check": "A4.4",
+      "name": "fitness runner",
+      "mode": "enforce",
+      "repair": true,
+      "status": "pass",
+      "blocking": 0,
+      "advisory": 0,
+      "waived": 0,
+      "error": null,
+      "verdict": "gates/A4/A4.4.json"
+    },
+    {
+      "gate": "A4",
+      "check": "A4.6",
+      "name": "traceability",
+      "mode": "enforce",
+      "repair": true,
+      "status": "pass",
+      "blocking": 0,
+      "advisory": 0,
+      "waived": 0,
+      "error": null,
+      "verdict": "gates/A4/A4.6.json"
+    }
+  ],
+  "findings": [],
+  "history": [
+    {
+      "iteration": 0,
+      "status": "violation",
+      "fingerprint": "eba24a3de14c373c071e5b572b00ce66b55ed589f0ff4bfc9339ac0a9317ae58",
+      "gates": {
+        "scope implement": "violation",
+        "A4 A4.4": "violation",
+        "A4 A4.6": "pass"
+      },
+      "blocking": 9
+    },
+    {
+      "iteration": 1,
+      "status": "pass",
+      "fingerprint": null,
+      "gates": {
+        "scope implement": "pass",
+        "A4 A4.4": "pass",
+        "A4 A4.6": "pass"
+      },
+      "blocking": 0
+    }
+  ]
+}

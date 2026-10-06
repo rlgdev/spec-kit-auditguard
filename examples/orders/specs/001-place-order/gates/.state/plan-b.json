@@ -1,0 +1,31 @@
+{
+  "runs": [
+    {
+      "iteration": 0,
+      "status": "violation",
+      "fingerprint": "daf7dc187c6d80ca9688cd01688149e7f816b368f7eda9807399859086473fff",
+      "gates": {
+        "scope plan": "violation",
+        "A0 A0.5": "pass",
+        "A0 A0.4": "pass",
+        "A3 A3.3": "violation",
+        "A3 A3.7": "pass"
+      },
+      "blocking": 2
+    },
+    {
+      "iteration": 1,
+      "status": "pass",
+      "fingerprint": null,
+      "gates": {
+        "scope plan": "pass",
+        "A0 A0.5": "pass",
+        "A0 A0.4": "pass",
+        "A3 A3.3": "pass",
+        "A3 A3.7": "pass"
+      },
+      "blocking": 0
+    }
+  ],
+  "terminal": true
+}

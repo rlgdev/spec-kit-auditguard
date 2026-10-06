@@ -1,0 +1,80 @@
+{
+  "rulebook": "acme-standards@v2026.10.1",
+  "lock": "sha256:b9afb89e07088d950d48aa197ba10ecfb0597a91024290bb93acee325863eff2",
+  "stacks": [
+    "java"
+  ],
+  "home_context": "orders",
+  "rules": [
+    {
+      "id": "ARCH-101",
+      "title": "HTTP APIs are published as OpenAPI 3 contracts",
+      "level": "must",
+      "targets": [
+        "contract",
+        "code"
+      ],
+      "check": "declared",
+      "skill": "api-contracts",
+      "skill_path": ".specify/standards/skills/api-contracts/SKILL.md",
+      "text": "Every HTTP API is described by an OpenAPI 3 document in contracts/ before it is implemented."
+    },
+    {
+      "id": "ARCH-201",
+      "title": "Layers depend downwards only (api -> application -> domain)",
+      "level": "must",
+      "targets": [
+        "plan",
+        "code"
+      ],
+      "check": "declared",
+      "skill": "layering",
+      "skill_path": ".specify/standards/skills/layering/SKILL.md",
+      "text": null
+    },
+    {
+      "id": "ARCH-301",
+      "title": "Contexts depend on each other only through published interfaces along domain-map relations",
+      "level": "must",
+      "targets": [
+        "code",
+        "edit"
+      ],
+      "check": "declared",
+      "skill": "context-boundaries",
+      "skill_path": ".specify/standards/skills/context-boundaries/SKILL.md",
+      "text": null
+    },
+    {
+      "id": "ARCH-401",
+      "title": "No credentials in source code",
+      "level": "must",
+      "targets": [
+        "edit",
+        "code"
+      ],
+      "check": "declared",
+      "skill": "secrets",
+      "skill_path": ".specify/standards/skills/secrets/SKILL.md",
+      "text": null
+    },
+    {
+      "id": "ARCH-501",
+      "title": "Every aggregate is written only by its owning context",
+      "level": "must",
+      "targets": [
+        "plan"
+      ],
+      "check": "judgement",
+      "skill": "data-ownership",
+      "skill_path": ".specify/standards/skills/data-ownership/SKILL.md",
+      "text": null
+    }
+  ],
+  "filtered_out": [
+    {
+      "rule": "ARCH-601",
+      "reason": "applies to context(s) payments; home context is orders"
+    }
+  ]
+}

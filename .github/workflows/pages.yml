@@ -1,0 +1,36 @@
+name: Viewer demo
+
+# Publishes the viewer of examples/orders to GitHub Pages. Enable Pages (Settings > Pages > Source: GitHub Actions),
+# then run this workflow by hand.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}viewer/
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - working-directory: examples/orders
+        run: python ../../scripts/python/auditguard.py render --html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: examples/orders/audit
+      - id: deployment
+        uses: actions/deploy-pages@v4

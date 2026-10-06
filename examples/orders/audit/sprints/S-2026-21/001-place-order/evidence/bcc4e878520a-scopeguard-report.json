@@ -1,0 +1,33 @@
+{
+  "feature_dir": "specs/001-place-order",
+  "summary": {
+    "plan": {
+      "items": 1,
+      "pass": 1,
+      "waived": 0,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 6,
+      "in_scope": 1,
+      "coverage_pct": 100.0
+    },
+    "tasks": null,
+    "implement": null
+  },
+  "rows": [
+    {
+      "id": "US1",
+      "kind": "story",
+      "title": "Place an order",
+      "priority": "P1",
+      "plan": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "covered -> contracts/orders.yaml POST /orders",
+        "evidence": []
+      },
+      "tasks": null,
+      "implement": null
+    }
+  ]
+}

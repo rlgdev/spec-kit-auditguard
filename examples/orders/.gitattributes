@@ -1,0 +1,5 @@
+
+# auditGuard: the audit trail is hashed byte for byte - no line-ending conversion
+audit/**/*.jsonl -text
+audit/**/evidence/** -text
+audit/**/seal.json -text

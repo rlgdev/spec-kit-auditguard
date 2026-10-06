@@ -1,0 +1,71 @@
+{
+  "feature_dir": "specs/001-place-order",
+  "summary": {
+    "plan": {
+      "items": 1,
+      "pass": 1,
+      "waived": 0,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 6,
+      "in_scope": 1,
+      "coverage_pct": 100.0
+    },
+    "tasks": {
+      "items": 1,
+      "pass": 1,
+      "waived": 0,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 2,
+      "in_scope": 1,
+      "coverage_pct": 100.0
+    },
+    "implement": {
+      "items": 1,
+      "pass": 1,
+      "waived": 0,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 0,
+      "in_scope": 1,
+      "coverage_pct": 100.0
+    }
+  },
+  "rows": [
+    {
+      "id": "US1",
+      "kind": "story",
+      "title": "Place an order",
+      "priority": "P1",
+      "plan": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "covered -> contracts/orders.yaml POST /orders",
+        "evidence": []
+      },
+      "tasks": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "carried by T002, T003, T004, T005",
+        "evidence": [
+          "T002",
+          "T003",
+          "T004",
+          "T005"
+        ]
+      },
+      "implement": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "all 4 tasks done",
+        "evidence": [
+          "T002",
+          "T003",
+          "T004",
+          "T005"
+        ]
+      }
+    }
+  ]
+}

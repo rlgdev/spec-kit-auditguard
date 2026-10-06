@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-10-06T12:00:00Z",
+  "catalog_url": "https://raw.githubusercontent.com/rlgdev/spec-kit-auditguard/main/catalog/extensions.json",
+  "extensions": {
+    "auditguard": {
+      "name": "auditGuard",
+      "id": "auditguard",
+      "description": "Tamper-evident audit trail of the Spec Kit SDLC: every command by stage, the gate reports of scopeGuard and archiGuard, the waiver history, human decisions and changes outside recorded commands, per sprint and feature, verifiable against git and the other golden sources.",
+      "author": "rlgdev",
+      "version": "0.1.0",
+      "download_url": "https://github.com/rlgdev/spec-kit-auditguard/releases/download/v0.1.0/auditguard.zip",
+      "repository": "https://github.com/rlgdev/spec-kit-auditguard",
+      "homepage": "https://github.com/rlgdev/spec-kit-auditguard",
+      "documentation": "https://github.com/rlgdev/spec-kit-auditguard/blob/main/README.md",
+      "changelog": "https://github.com/rlgdev/spec-kit-auditguard/blob/main/CHANGELOG.md",
+      "license": "MIT",
+      "category": "process",
+      "effect": "read-write",
+      "requires": {
+        "speckit_version": ">=1.0.1"
+      },
+      "provides": {
+        "commands": 28,
+        "hooks": 20,
+        "events": 4
+      },
+      "tags": [
+        "audit",
+        "traceability",
+        "governance",
+        "compliance",
+        "human-in-the-loop"
+      ],
+      "verified": false,
+      "downloads": 0,
+      "stars": 0,
+      "created_at": "2026-10-06T00:00:00Z",
+      "updated_at": "2026-10-06T12:00:00Z"
+    }
+  }
+}

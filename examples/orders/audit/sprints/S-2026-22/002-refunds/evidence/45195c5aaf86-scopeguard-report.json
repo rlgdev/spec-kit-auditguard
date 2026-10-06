@@ -1,0 +1,75 @@
+{
+  "feature_dir": "specs/002-refunds",
+  "summary": {
+    "plan": {
+      "items": 4,
+      "pass": 3,
+      "waived": 1,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 0,
+      "in_scope": 3,
+      "coverage_pct": 100.0
+    },
+    "tasks": null,
+    "implement": null
+  },
+  "rows": [
+    {
+      "id": "US1",
+      "kind": "story",
+      "title": "Refund a cancelled order",
+      "priority": "P1",
+      "plan": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "covered -> contracts/refunds.yaml POST /refunds",
+        "evidence": []
+      },
+      "tasks": null,
+      "implement": null
+    },
+    {
+      "id": "FR-001",
+      "kind": "requirement",
+      "title": "System MUST refund the full order total when an order is cancelled.",
+      "priority": null,
+      "plan": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "covered -> data-model.md Refund",
+        "evidence": []
+      },
+      "tasks": null,
+      "implement": null
+    },
+    {
+      "id": "FR-002",
+      "kind": "requirement",
+      "title": "System MUST record every refund with its payment reference.",
+      "priority": null,
+      "plan": {
+        "verdict": "pass",
+        "code": "",
+        "detail": "covered -> data-model.md Refund.paymentRef",
+        "evidence": []
+      },
+      "tasks": null,
+      "implement": null
+    },
+    {
+      "id": "FR-003",
+      "kind": "requirement",
+      "title": "System MUST support partial refunds of single order lines.",
+      "priority": null,
+      "plan": {
+        "verdict": "waived",
+        "code": "",
+        "detail": "deferred: PO decision 2026-10-22: partial refunds move to phase 2",
+        "evidence": []
+      },
+      "tasks": null,
+      "implement": null
+    }
+  ]
+}

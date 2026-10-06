@@ -1,0 +1,28 @@
+{
+  "v": 1,
+  "sprint": "S-2026-21",
+  "closed_by": "Roman",
+  "at": "2026-10-17T17:00:00+02:00",
+  "journals": {
+    "001-place-order/journal.jsonl": {
+      "head": "a30b66a192e3f289c6d9f5ba20de503cdf1a2a91ed9375d90ddc5d64f4ece9c3",
+      "count": 26,
+      "first_seq": 1,
+      "last_seq": 26,
+      "file_sha256": "939fbc0ff9e0bba8ce0bd731a0e2af77b18288df1eb26562e699dfac672d8074"
+    },
+    "_project/journal.jsonl": {
+      "head": "69ef0d7c8c7614c55cccf43ebf22b5c782c8b029f2827cb8769f1fbbd22954a6",
+      "count": 8,
+      "first_seq": 1,
+      "last_seq": 8,
+      "file_sha256": "c082bdffb965f0f33005810a105adec3ea745dd39bdc8e3e0b714115cbc6a1ae"
+    }
+  },
+  "evidence": {
+    "count": 37,
+    "sha256_of_sorted_hashes": "7b7eaa7f5497b31b4ea04e405b850f53ec5bab77e1749ededa12c1769fcf7623"
+  },
+  "warnings": [],
+  "hash": "62330b27d391c45533ef96aadb02f05ca9bbd3e06e3abf7ced12f8876e2f856a"
+}

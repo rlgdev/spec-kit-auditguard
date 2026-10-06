@@ -1,0 +1,15 @@
+{
+  "runs": [
+    {
+      "iteration": 0,
+      "status": "pass",
+      "fingerprint": null,
+      "gates": {
+        "scope tasks": "pass",
+        "A3 A3.5": "pass"
+      },
+      "blocking": 0
+    }
+  ],
+  "terminal": true
+}

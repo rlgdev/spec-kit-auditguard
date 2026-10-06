@@ -1,0 +1,92 @@
+name: "auditGuard for Spec Kit"
+description: "Verify the Spec Kit audit trail: hash chains, seals and evidence, and every claim against git and the other golden sources"
+author: "rlgdev"
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  command:
+    description: "verify | check | render | anchor"
+    required: false
+    default: "verify"
+  golden:
+    description: "verify: also check the golden sources (needs the full history: fetch-depth 0, notes and tags)"
+    required: false
+    default: "true"
+  recompute:
+    description: "verify: also recompute scopeGuard reports at their commits (G8)"
+    required: false
+    default: "false"
+  sprint:
+    description: "anchor: the sealed sprint to tag (empty = chain heads only)"
+    required: false
+    default: ""
+  push:
+    description: "anchor: push the notes ref and the tag"
+    required: false
+    default: "false"
+  summary:
+    description: "Write the result to the job summary"
+    required: false
+    default: "true"
+  engine:
+    description: "'installed' = the auditGuard the project installed (.specify/extensions/auditguard), falling back to this action's; 'action' = this action's"
+    required: false
+    default: "installed"
+  working-directory:
+    description: "Spec Kit project root (the directory that contains .specify/ and audit/)"
+    required: false
+    default: "."
+  args:
+    description: "Extra arguments for the command"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: auditGuard
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        AU_COMMAND: ${{ inputs.command }}
+        AU_GOLDEN: ${{ inputs.golden }}
+        AU_RECOMPUTE: ${{ inputs.recompute }}
+        AU_SPRINT: ${{ inputs.sprint }}
+        AU_PUSH: ${{ inputs.push }}
+        AU_SUMMARY: ${{ inputs.summary }}
+        AU_ENGINE: ${{ inputs.engine }}
+        AU_ARGS: ${{ inputs.args }}
+        AU_ACTION_ENGINE: ${{ github.action_path }}/scripts/python/auditguard.py
+        AUDITGUARD_CI: "1"
+      run: |
+        set -euo pipefail
+        PY=python3
+        command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1 || PY=python
+        engine="$AU_ACTION_ENGINE"
+        if [ "$AU_ENGINE" = "installed" ] && [ -f .specify/extensions/auditguard/scripts/python/auditguard.py ]; then
+          engine=.specify/extensions/auditguard/scripts/python/auditguard.py
+        fi
+        cmd=("$PY" "$engine" "$AU_COMMAND")
+        case "$AU_COMMAND" in
+          verify)
+            if [ "$AU_GOLDEN" = "true" ]; then cmd+=(--golden); fi
+            if [ "$AU_RECOMPUTE" = "true" ]; then cmd+=(--recompute); fi
+            cmd+=(--no-render)
+            if [ "$AU_SUMMARY" = "true" ] && [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then tmp="$(mktemp)"; cmd+=(--out "$tmp"); fi
+            ;;
+          anchor)
+            if [ -n "$AU_SPRINT" ]; then cmd+=(--sprint "$AU_SPRINT"); fi
+            if [ "$AU_PUSH" = "true" ]; then cmd+=(--push); fi
+            cmd+=(--by "${GITHUB_ACTOR:-ci}")
+            ;;
+          render) cmd+=(--html) ;;
+        esac
+        if [ -n "$AU_ARGS" ]; then read -r -a extra <<< "$AU_ARGS"; cmd+=("${extra[@]}"); fi
+        echo "auditGuard: ${cmd[*]:1}"
+        set +e
+        "${cmd[@]}"; code=$?
+        set -e
+        if [ -n "${tmp:-}" ] && [ -f "$tmp" ]; then cat "$tmp" >> "$GITHUB_STEP_SUMMARY"; fi
+        exit $code

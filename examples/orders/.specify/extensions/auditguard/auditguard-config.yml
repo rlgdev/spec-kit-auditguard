@@ -1,0 +1,110 @@
+# auditGuard configuration
+#
+# Location: .specify/extensions/auditguard/auditguard-config.yml  (committed; change it through a pull request)
+# Workstation-only overrides: .specify/extensions/auditguard/local-config.yml (integration, render.on_hook,
+# render.html_on_hook, viewer.*). CI (CI=true) reads only this committed file. Unknown keys are errors.
+#
+# After changing `integration`, apply it to Spec Kit's hooks:
+#     bash .specify/extensions/auditguard/scripts/bash/auditguard.sh configure      (or /speckit.auditguard.configure)
+
+version: 1
+
+# hooks:    the twenty before_/after_ hooks of the Spec Kit commands record (default)
+# workflow: the hooks print `skipped`; workflow shell steps (`auditguard hook ... --via workflow`) and CI record
+integration: hooks
+
+# record:  auditGuard never blocks anything - it records (default)
+# enforce: `auditguard check` and `sprint close` fail on a broken rule (below), and a hook that cannot record exits 2
+mode: record
+
+audit:
+  root: audit                       # the audit folder, committed with the code
+  register: audit/sprints.yml       # the sprint register (auditguard sprint open / close)
+  unassigned: _unassigned           # folder for events while no sprint is open
+  project: _project                 # chain of the project-level events (constitution, sprints, sessions, notes)
+  evidence:
+    snapshot: true                  # keep content-addressed copies of the reports the events reference
+    max_file_kb: 512                # larger files: sha256 and source path only
+
+render:
+  on_hook: true                     # rebuild trail.md / sprint.md / features/*.md / index.md after every hook
+  html_on_hook: false               # also rebuild audit/viewer/data.js after every hook
+  expiring_days: 30                 # waivers expiring within this window are open items
+
+viewer:
+  inline_kb: 64                     # evidence up to this size is embedded in the viewer (data.js)
+  theme: auto                       # auto | light | dark
+
+sessions:
+  record: true                      # session.started / session.ended and the session id on agent events
+
+# Spec Kit command -> stage; a stage is completed by the first of its milestone events.
+stages:
+  design:
+    commands: [constitution, specify, clarify, plan, tasks, analyze, checklist, taskstoissues]
+    completed_by: [design.signed]                       # archiGuard signoff.json, or `auditguard decide design approve`
+  implement:
+    commands: [implement, converge]
+    completed_by: [handover.4-5, implement.approved]    # archiGuard handover-4-5.json green, or `decide implement approve`
+  test:
+    commands: []                                        # entered when implement completes
+    completed_by: [pr.approved]                         # `auditguard decide pr approve`
+
+collectors:
+  git:
+    enabled: true
+    artefacts: [spec.md, plan.md, research.md, data-model.md, quickstart.md, tasks.md, handover.yml, "contracts/**", "checklists/**"]
+    project_artefacts: [.specify/memory/constitution.md]
+    code: ["src/**", "app/**", "lib/**", "tests/**", "test/**"]
+  scopeguard:
+    enabled: auto                   # auto = on when the scopeguard extension is installed
+    version: ">=0.4,<0.6"
+    report: true                    # run `scopeguard.py report --json` (read-only) for the coverage per phase
+    timeout: 120
+  archiguard:
+    enabled: auto
+    version: ">=0.1,<0.3"
+    ledger: .specify/archiguard/ledger.jsonl
+  workflow:
+    enabled: true
+    runs: .specify/workflows/runs   # Spec Kit workflow runs: every gate verdict is a human decision
+  # a plug-in collector: `<command> --feature-dir <dir> --since <iso> --json` prints a JSON list of events
+  # jira:
+  #   command: tools/jira-collector.py
+  #   timeout: 60
+
+# The golden sources `auditguard verify --golden` checks the trail against.
+golden:
+  git:
+    enabled: true
+    remote: origin
+    base: main
+    explain_paths: ["specs/**", "src/**", "app/**", "lib/**", "tests/**", "test/**", ".specify/memory/**"]
+    exclude_paths: ["specs/*/gates/**", "specs/*/.scopeguard/**", "specs/*/scopeguard-*.md", "audit/**"]
+    notes_ref: refs/notes/auditguard   # anchor notes (chain heads, seals)
+    sign: false                        # true: the tags audit/<sprint> are signed (git tag -s) and verified (git tag -v)
+  handover: handover.yml                # BA specification pins (archiGuard's handover record) - G5
+  lock: .specify/archiguard/standards.lock.yml
+  ledger: .specify/archiguard/ledger.jsonl
+  tracker: null                         # { command: tools/jira-golden.py } - issue keys cited in events are checked
+
+actors:
+  human: auto                       # auto = git user.name; --by and AUDITGUARD_ACTOR override
+  agent: auto                       # auto = the integration in .specify/init-options.json
+  ci_env: [GITHUB_ACTOR, BITBUCKET_STEP_TRIGGERER_UUID, GITLAB_USER_LOGIN, BUILD_REQUESTEDFOR]
+
+# Completeness rules - `auditguard check` and `sprint close`: [WARN] in record mode, [FAIL] in enforce mode.
+rules:
+  implement_requires_design_signed: true
+  waiver_requires_approver: true
+  escalations_decided_before_close: true
+  no_changes_after_signoff: true
+  commands_closed_before_close: true
+  no_unassigned_events: true
+  anchored_before_export: false     # export refuses a sprint whose seal is not anchored
+
+# The guard (pre_tool_use): agents never change the trail and never record a person's decision.
+guard:
+  enabled: true
+  readonly: ["audit/**", ".specify/extensions/auditguard/**"]
+  human_only: [decide, note, "sprint open", "sprint close", anchor]

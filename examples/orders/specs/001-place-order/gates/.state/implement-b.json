@@ -1,0 +1,27 @@
+{
+  "runs": [
+    {
+      "iteration": 0,
+      "status": "violation",
+      "fingerprint": "eba24a3de14c373c071e5b572b00ce66b55ed589f0ff4bfc9339ac0a9317ae58",
+      "gates": {
+        "scope implement": "violation",
+        "A4 A4.4": "violation",
+        "A4 A4.6": "pass"
+      },
+      "blocking": 9
+    },
+    {
+      "iteration": 1,
+      "status": "pass",
+      "fingerprint": null,
+      "gates": {
+        "scope implement": "pass",
+        "A4 A4.4": "pass",
+        "A4 A4.6": "pass"
+      },
+      "blocking": 0
+    }
+  ],
+  "terminal": true
+}

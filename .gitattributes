@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.ps1 text eol=lf
+*.sh text eol=lf
+*.zip binary
+*.png binary
+# the example's audit trail is hashed byte for byte
+examples/**/audit/**/*.jsonl -text
+examples/**/audit/**/evidence/** -text
+examples/**/audit/**/seal.json -text
