@@ -75,6 +75,20 @@ def manifest_commands() -> set:
     return set(re.findall(r"file:\s*(commands/[^\s}]+)", text))
 
 
+def catalog_counts() -> str:
+    """'' when catalog/extensions.json `provides` matches extension.yml (commands, hooks, events), else the problem."""
+    text = (ROOT / "extension.yml").read_text(encoding="utf-8")
+    commands = len(manifest_commands())
+    hooks = len(re.findall(r"^  (before|after)_[a-z]+:\s*$", text, re.M))
+    events = len(re.findall(r"^  [a-z_]+:\s*$", text.split("\nevents:")[1].split("\ntags:")[0], re.M)) if "\nevents:" in text else 0
+    data = json.loads((ROOT / "catalog" / "extensions.json").read_text(encoding="utf-8"))
+    provides = (data["extensions"].get("auditguard") or {}).get("provides", {})
+    if (provides.get("commands"), provides.get("hooks"), provides.get("events", 0)) != (commands, hooks, events):
+        return (f"catalog/extensions.json provides {provides} but extension.yml has {commands} commands, "
+                f"{hooks} hooks and {events} events")
+    return ""
+
+
 def add_file(zf: zipfile.ZipFile, source: Path, arcname: str) -> None:
     info = zipfile.ZipInfo(arcname, date_time=FIXED_DATE)
     executable = source.suffix in (".sh", ".py") and "scripts" in source.parts
@@ -105,6 +119,10 @@ def main() -> int:
     missing = [c for c in manifest_commands() if not (ROOT / c).is_file()]
     if missing:
         print(f"extension.yml names command files that do not exist: {', '.join(sorted(missing))}", file=sys.stderr)
+        return 1
+    counted = catalog_counts()
+    if counted:
+        print(counted, file=sys.stderr)
         return 1
     found = versions()
     if len(set(found.values())) != 1:

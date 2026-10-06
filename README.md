@@ -3,6 +3,8 @@
 [![CI](https://github.com/rlgdev/spec-kit-auditguard/actions/workflows/ci.yml/badge.svg)](https://github.com/rlgdev/spec-kit-auditguard/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+> Part of the **Guardians** family for Spec Kit (scopeGuard · archiGuard · auditGuard). Install the three together with the [Guardians bundle](https://github.com/rlgdev/spec-kit-guardians) and start with its [getting-started guide](https://github.com/rlgdev/spec-kit-guardians/blob/main/docs/getting-started.md).
+
 **A tamper-evident audit trail of the [GitHub Spec Kit](https://github.com/github/spec-kit) SDLC, written by a
 script, never by the agent - and verifiable against the golden sources.**
 auditGuard records every Spec Kit command a feature goes through and marks the stage it belongs to (Design →
@@ -293,6 +295,7 @@ The `audit/` folder stays: it is your record.
 
 ```bash
 python -m pytest -q                       # engine tests (+ integration with SCOPEGUARD_SRC / ARCHIGUARD_SRC checkouts)
+python tools/build.py --check             # the generated commands, versions and catalog agree (CI)
 python tools/build.py                     # commands/ regenerated, dist/auditguard.zip, dist/SHA256SUMS
 bash tools/e2e-speckit.sh                 # install into a fresh Spec Kit project and drive it (needs `specify`)
 python tools/make-example.py --archiguard-src ../spec-kit-archiguard --scopeguard-src ../spec-kit-scopeguard
@@ -301,6 +304,8 @@ python tools/make-example.py --archiguard-src ../spec-kit-archiguard --scopeguar
 The specification this release implements is [docs/specification.md](docs/specification.md). To release, bump
 the version in `extension.yml`, `scripts/python/auditguard_core/__init__.py` and `catalog/extensions.json`, add a
 CHANGELOG entry, then push a `vX.Y.Z` tag. The release workflow runs the tests, builds the archive and attaches it.
+
+[CONTRIBUTING.md](CONTRIBUTING.md) has the conventions and the release steps of the family.
 
 ## License
 
