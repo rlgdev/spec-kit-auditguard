@@ -8,6 +8,8 @@ import subprocess
 import sys
 import zipfile
 
+import pytest
+
 from auditguard_core import __version__, yamlio
 from auditguard_core.common import HOOK_EVENTS
 
@@ -69,9 +71,11 @@ def test_python_launcher_version():
     assert proc.stdout.strip() == f"auditGuard {__version__}"
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="bash from a Windows subprocess is the WSL launcher; "
+                    "the CI launchers job runs the bash launcher in Git Bash")
 def test_bash_launcher(tmp_path):
     import shutil
     if not shutil.which("bash"):
-        return
+        pytest.skip("no bash")
     proc = subprocess.run(["bash", str(REPO / "scripts/bash/auditguard.sh"), "version"], capture_output=True, text=True)
     assert proc.returncode == 0 and __version__ in proc.stdout
