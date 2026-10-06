@@ -308,8 +308,8 @@ class Story:
         order = self.p / "src/main/java/com/acme/orders/domain/Order.java"
         order.write_text("\n".join(l for l in order.read_text(encoding="utf-8").split("\n") if "orders.api" not in l), encoding="utf-8")
         ctrl = self.p / "src/main/java/com/acme/orders/api/OrderController.java"
-        ctrl.write_text(ctrl.read_text(encoding="utf-8").replace("com.acme.payments.internal.PaymentGateway", "com.acme.payments.api.PaymentsClient")
-                        .replace("PaymentGateway", "PaymentsClient"), encoding="utf-8")
+        ctrl.write_text("\n".join("import com.acme.payments.api.PaymentsClient;" if "payments.internal" in l else l.replace("PaymentGateway", "PaymentsClient")
+                                  for l in ctrl.read_text(encoding="utf-8").split("\n")), encoding="utf-8")
         self.touch(order, ctrl)
         tasks = (self.p / f / "tasks.md").read_text(encoding="utf-8").replace("- [ ]", "- [x]")
         self.write(f"{f}/tasks.md", tasks)

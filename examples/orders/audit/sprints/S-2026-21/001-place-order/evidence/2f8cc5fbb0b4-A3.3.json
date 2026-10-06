@@ -5,7 +5,7 @@
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "33d8198b9a8b105ee5eb945636dded8e58a32e23",
+    "commit": "5060567732b133179882d23a41bec02f0418b256",
     "stage": "plan"
   },
   "pins": {
@@ -28,8 +28,8 @@
       "reason": "no check declared for the plan - agent judgement, reviewed at sign-off"
     }
   ],
-  "iteration": null,
-  "max_iterations": null,
+  "iteration": 1,
+  "max_iterations": 3,
   "data": {
     "rules": 3
   }

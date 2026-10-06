@@ -1,12 +1,12 @@
 {
   "gate": "scope",
-  "guardrail": "plan-scope-coverage-spec-->-plan",
-  "check": "plan",
+  "guardrail": "tasks-scope-coverage-plan-->-tasks",
+  "check": "tasks",
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "33d8198b9a8b105ee5eb945636dded8e58a32e23",
-    "stage": "plan"
+    "commit": "18f4683d30615289b4ff0b7085394542713e566f",
+    "stage": "tasks"
   },
   "pins": {
     "rulebook": "acme-standards@v2026.10.1",
@@ -19,8 +19,8 @@
   "findings": [],
   "waived": [],
   "rules_skipped": [],
-  "iteration": null,
-  "max_iterations": null,
+  "iteration": 0,
+  "max_iterations": 3,
   "data": {
     "engine": "scopeguard 0.4.0",
     "summary": {

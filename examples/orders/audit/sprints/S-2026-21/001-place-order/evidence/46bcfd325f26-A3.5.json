@@ -5,7 +5,7 @@
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "33d8198b9a8b105ee5eb945636dded8e58a32e23",
+    "commit": "18f4683d30615289b4ff0b7085394542713e566f",
     "stage": "tasks"
   },
   "pins": {
@@ -14,11 +14,20 @@
     "domain_map": "1.4.0",
     "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
   },
-  "status": "pass",
+  "status": "violation",
   "mode": "enforce",
-  "findings": [],
+  "findings": [
+    {
+      "rule": "ARCH-201",
+      "severity": "blocking",
+      "where": "tasks.md",
+      "message": "no fitness-test task for ARCH-201 Layers depend downwards only (api -> application -> domain)",
+      "fix_hint": "add '- [ ] T0xx [FITNESS] <what is verified> - ARCH-201'",
+      "check": "A3.5"
+    }
+  ],
   "waived": [],
   "rules_skipped": [],
-  "iteration": null,
-  "max_iterations": null
+  "iteration": 1,
+  "max_iterations": 3
 }

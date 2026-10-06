@@ -1,7 +1,7 @@
 package com.acme.orders.api;
 
 import com.acme.orders.application.PlaceOrder;
-import com.acme.payments.api.PaymentsClient;   // ARCH-301: payments publishes only com.acme.payments.api
+import com.acme.payments.api.PaymentsClient;
 
 @RestController
 public class OrderController {

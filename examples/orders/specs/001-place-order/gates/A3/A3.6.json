@@ -5,7 +5,7 @@
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "b79c3f6ee52bfe22ecf56746e152ea20b3b76cb9",
+    "commit": "33d8198b9a8b105ee5eb945636dded8e58a32e23",
     "stage": "tasks"
   },
   "pins": {

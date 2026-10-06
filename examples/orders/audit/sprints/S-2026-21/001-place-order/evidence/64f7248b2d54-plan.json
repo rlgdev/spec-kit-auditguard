@@ -1,12 +1,12 @@
 {
-  "gate": "A4",
-  "guardrail": "A4.6-traceability",
-  "check": "A4.6",
+  "gate": "scope",
+  "guardrail": "plan-scope-coverage-spec-->-plan",
+  "check": "plan",
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "b656c3534daf0ed99278f14bde043818b3520630",
-    "stage": "code"
+    "commit": "5060567732b133179882d23a41bec02f0418b256",
+    "stage": "plan"
   },
   "pins": {
     "rulebook": "acme-standards@v2026.10.1",
@@ -20,5 +20,18 @@
   "waived": [],
   "rules_skipped": [],
   "iteration": 1,
-  "max_iterations": 3
+  "max_iterations": 3,
+  "data": {
+    "engine": "scopeguard 0.4.0",
+    "summary": {
+      "items": 7,
+      "pass": 7,
+      "waived": 0,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 0,
+      "in_scope": 7,
+      "coverage_pct": 100.0
+    }
+  }
 }

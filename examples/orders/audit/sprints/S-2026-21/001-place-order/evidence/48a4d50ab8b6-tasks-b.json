@@ -12,7 +12,7 @@
     "spec.md": "803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e",
     "plan.md": "cad693b0764d2484ce29c0ae68fcfea9431a23a2fea9ce2fdde50fd20839de7c",
     "data-model.md": "b01b91188ee48a8c2f586b865755aae59c06688c978baeb4521a8813f9176233",
-    "tasks.md": "c99a4786c6d89a2ef09f45b9e0e3e44ca3929abf12c2e2266e44389514a6e615",
+    "tasks.md": "0a4f9b13d883885839991d97cd0546cf0ed15e79e5f1409dc77887596c0075da",
     "handover.yml": "85df34915da92549df237e52a227f9fc0664eb0e5c94f84abc123ad7e17c6ba8",
     "contracts/orders.yaml": "779837d14035855493df15a9caa53260335e08a027842f13265bdcfef4fb7fa3"
   },
@@ -22,10 +22,13 @@
     "domain_map": "1.4.0",
     "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
   },
-  "iteration": 0,
+  "iteration": 1,
   "max_iterations": 3,
-  "status": "pass",
-  "escalation": null,
+  "status": "escalated",
+  "escalation": {
+    "reason": "no progress: the same findings came back as in iteration 0 (the repairs conflict or cannot satisfy the rules)",
+    "report": "specs/001-place-order/gates/escalation-tasks-b.md"
+  },
   "gates": [
     {
       "gate": "scope",
@@ -46,25 +49,45 @@
       "name": "task guard",
       "mode": "enforce",
       "repair": true,
-      "status": "pass",
-      "blocking": 0,
+      "status": "violation",
+      "blocking": 1,
       "advisory": 0,
       "waived": 0,
       "error": null,
       "verdict": "gates/A3/A3.5.json"
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "rule": "ARCH-201",
+      "severity": "blocking",
+      "where": "tasks.md",
+      "message": "no fitness-test task for ARCH-201 Layers depend downwards only (api -> application -> domain)",
+      "fix_hint": "add '- [ ] T0xx [FITNESS] <what is verified> - ARCH-201'",
+      "check": "A3.5",
+      "repairable": true
+    }
+  ],
   "history": [
     {
       "iteration": 0,
-      "status": "pass",
-      "fingerprint": null,
+      "status": "violation",
+      "fingerprint": "3861607cb860ae1ca53cc73c933177bb86c850bb2a59d773eaeeced72e91c820",
       "gates": {
         "scope tasks": "pass",
-        "A3 A3.5": "pass"
+        "A3 A3.5": "violation"
       },
-      "blocking": 0
+      "blocking": 1
+    },
+    {
+      "iteration": 1,
+      "status": "escalated",
+      "fingerprint": "3861607cb860ae1ca53cc73c933177bb86c850bb2a59d773eaeeced72e91c820",
+      "gates": {
+        "scope tasks": "pass",
+        "A3 A3.5": "violation"
+      },
+      "blocking": 1
     }
   ]
 }

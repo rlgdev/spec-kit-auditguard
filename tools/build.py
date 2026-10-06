@@ -91,6 +91,7 @@ def catalog_counts() -> str:
 
 def add_file(zf: zipfile.ZipFile, source: Path, arcname: str) -> None:
     info = zipfile.ZipInfo(arcname, date_time=FIXED_DATE)
+    info.create_system = 3  # Unix 'made by' on every platform: the modes apply and the hash does not depend on the build OS
     executable = source.suffix in (".sh", ".py") and "scripts" in source.parts
     info.external_attr = ((0o100755 if executable else 0o100644) & 0xFFFF) << 16
     info.compress_type = zipfile.ZIP_DEFLATED
@@ -119,6 +120,13 @@ def main() -> int:
     missing = [c for c in manifest_commands() if not (ROOT / c).is_file()]
     if missing:
         print(f"extension.yml names command files that do not exist: {', '.join(sorted(missing))}", file=sys.stderr)
+        return 1
+    text = (ROOT / "extension.yml").read_text(encoding="utf-8")
+    absent = [f"extension.yml names a config template that does not exist: {t}"
+              for t in re.findall(r'template:\s*"?([^"\s]+)"?', text) if not (ROOT / t).is_file()]
+    absent += [f"release file missing: {n}" for n in EXTENSION_FILES if not (ROOT / n).is_file()]
+    if absent:
+        print("\n".join(absent), file=sys.stderr)
         return 1
     counted = catalog_counts()
     if counted:

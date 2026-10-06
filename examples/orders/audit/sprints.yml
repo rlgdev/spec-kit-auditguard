@@ -16,7 +16,7 @@ sprints:
     closed:
       by: Roman
       at: "2026-10-17T17:00:00+02:00"
-      seal: 62330b27d391c45533ef96aadb02f05ca9bbd3e06e3abf7ced12f8876e2f856a
+      seal: dd4978bb88433950f276986f60158550e09097c717e2a745638cd089b08897a8
   - id: S-2026-22
     name: Sprint 22
     start: "2026-10-20"

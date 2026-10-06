@@ -74,6 +74,7 @@ def build_pack(root: Path, cfg: Any, sprint: str, out: Optional[Path], verificat
     with zipfile.ZipFile(target, "w") as zf:
         for name, data in sorted(entries.items()):
             info = zipfile.ZipInfo(prefix + name, date_time=FIXED_DATE)
+            info.create_system = 3  # Unix 'made by' on every platform: the pack hash does not depend on the OS (NFR-004)
             info.external_attr = (0o100644 & 0xFFFF) << 16
             info.compress_type = zipfile.ZIP_DEFLATED
             zf.writestr(info, data)

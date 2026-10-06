@@ -1,12 +1,12 @@
 {
-  "gate": "A4",
-  "guardrail": "A4.6-traceability",
-  "check": "A4.6",
+  "gate": "A3",
+  "guardrail": "A3.1-context-loader",
+  "check": "A3.1",
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "b656c3534daf0ed99278f14bde043818b3520630",
-    "stage": "code"
+    "commit": "5060567732b133179882d23a41bec02f0418b256",
+    "stage": "plan"
   },
   "pins": {
     "rulebook": "acme-standards@v2026.10.1",
@@ -19,6 +19,10 @@
   "findings": [],
   "waived": [],
   "rules_skipped": [],
-  "iteration": 1,
-  "max_iterations": 3
+  "iteration": null,
+  "max_iterations": null,
+  "data": {
+    "applicable": 5,
+    "filtered_out": 1
+  }
 }

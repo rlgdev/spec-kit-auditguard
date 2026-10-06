@@ -31,8 +31,8 @@
 
 | When | Feature | Tool | Gate | Status | Summary | Iterations | Report |
 |---|---|---|---|---|---|---|---|
-| 10-20 11:15 | 001-place-order | archiguard | implement-a | PASS | archiGuard implement-a PASS |  | [implement-a.json](evidence/06c7e6cf1d63-implement-a.json), [A4.1.json](evidence/ba7372872919-A4.1.json) |
-| 10-20 11:15 | 001-place-order | archiguard | implement-b | PASS | archiGuard implement-b PASS (1 it.) | 1 | [implement-b.json](evidence/ae1d788eca1e-implement-b.json), [implement.json](evidence/9303915a060d-implement.json), [A4.4.json](evidence/068ef0eff74b-A4.4.json), [A4.6.json](evidence/9631a583c2f8-A4.6.json) |
+| 10-20 11:15 | 001-place-order | archiguard | implement-a | PASS | archiGuard implement-a PASS |  | [implement-a.json](evidence/489c76c5e7d5-implement-a.json), [A4.1.json](evidence/8a89456461db-A4.1.json) |
+| 10-20 11:15 | 001-place-order | archiguard | implement-b | PASS | archiGuard implement-b PASS (1 it.) | 1 | [implement-b.json](evidence/5d625d4079a8-implement-b.json), [implement.json](evidence/1b7536e04aac-implement.json), [A4.4.json](evidence/c226af24a6b0-A4.4.json), [A4.6.json](evidence/c6624304b37f-A4.6.json) |
 | 10-20 11:20 | 001-place-order | scopeguard | implement | PASS | scopeGuard implement 1/1 PASS |  | [scopeguard-report.json](evidence/dc425cb7de0a-scopeguard-report.json) |
 | 10-22 10:25 | 002-refunds | scopeguard | plan | PASS | scopeGuard plan 3/3 PASS |  | [scopeguard-report.json](evidence/45195c5aaf86-scopeguard-report.json) |
 
@@ -40,7 +40,7 @@
 
 | When | Feature | Files | Flags | Inferred command | Author (committed) | Event |
 |---|---|---|---|---|---|---|
-| 10-21 11:00 | 001-place-order | specs/001-place-order/plan.md | after sign-off | plan | J. Doe (f514324) | #33 |
+| 10-21 11:00 | 001-place-order | specs/001-place-order/plan.md | after sign-off | plan | J. Doe (3d1eaa3) | #33 |
 
 ## Sessions
 

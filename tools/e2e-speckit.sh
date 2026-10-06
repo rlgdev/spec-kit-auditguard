@@ -13,6 +13,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PORT="${E2E_PORT:-8766}"
 WORK="$(mktemp -d)"
+trap 'kill "${SERVER:-}" 2>/dev/null || true; rm -rf "$WORK"' EXIT
 PY="$(command -v python3 || command -v python)"
 
 fail() { echo "E2E FAIL: $*" >&2; exit 1; }
@@ -28,7 +29,6 @@ mkdir -p "$WORK/www"
 cp "$REPO/dist/auditguard.zip" "$WORK/www/"
 (cd "$WORK/www" && exec "$PY" -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1) &
 SERVER=$!
-trap 'kill $SERVER 2>/dev/null || true; rm -rf "$WORK"' EXIT
 sleep 2
 
 echo "== specify $(specify version 2>/dev/null | grep -o 'CLI Version *[0-9.]*' | grep -o '[0-9.]*$' || echo '?')"

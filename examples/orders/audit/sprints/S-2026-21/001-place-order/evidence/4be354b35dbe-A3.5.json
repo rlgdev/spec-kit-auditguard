@@ -1,12 +1,12 @@
 {
-  "gate": "A4",
-  "guardrail": "A4.6-traceability",
-  "check": "A4.6",
+  "gate": "A3",
+  "guardrail": "A3.5-task-guard",
+  "check": "A3.5",
   "guardrail_version": "0.1.0",
   "subject": {
     "feature": "specs/001-place-order",
-    "commit": "b656c3534daf0ed99278f14bde043818b3520630",
-    "stage": "code"
+    "commit": "18f4683d30615289b4ff0b7085394542713e566f",
+    "stage": "tasks"
   },
   "pins": {
     "rulebook": "acme-standards@v2026.10.1",
@@ -19,6 +19,6 @@
   "findings": [],
   "waived": [],
   "rules_skipped": [],
-  "iteration": 1,
+  "iteration": 0,
   "max_iterations": 3
 }
