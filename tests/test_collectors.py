@@ -108,7 +108,7 @@ def test_archiguard_verdicts_signoff_and_reopen(opened):
     assert fin["data"]["gates"][0]["step"] == "plan-b"
     # idempotent
     assert "0 event(s)" in opened.ag("collect").stdout
-    signoff = {"by": "Tech lead", "role": "tech lead", "at": "2026-10-08T14:00:00", "feature": f, "commit": None,
+    signoff = {"by": "Tech lead", "role": "tech lead", "at": "2026-10-08T14:00:00+02:00", "feature": f, "commit": None,
                "hashes": {"spec.md": "x"}, "pins": {}, "evidence": {"speckit.plan": "pass"}}
     opened.write(f"{f}/gates/signoff.json", json.dumps(signoff))
     opened.ag("collect")
@@ -118,7 +118,7 @@ def test_archiguard_verdicts_signoff_and_reopen(opened):
     # archiguard reopen moves the record into signoff-history with `reopened`
     (opened.root / f / "gates/signoff.json").unlink()
     opened.write(f"{f}/gates/signoff-history/signoff-20261009T100000.json",
-                 json.dumps(dict(signoff, reopened={"by": "Tech lead", "reason": "contract change", "at": "2026-10-09T10:00:00"})))
+                 json.dumps(dict(signoff, reopened={"by": "Tech lead", "reason": "contract change", "at": "2026-10-09T10:00:00+02:00"})))
     opened.ag("collect")
     assert opened.kinds()[-3:] == ["decision", "design.reopened", "stage.reentered"]
     assert opened.kinds().count("design.signed") == 1

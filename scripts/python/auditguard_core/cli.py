@@ -143,7 +143,17 @@ def _log_event_error(root: Path, message: str) -> None:
         pass
 
 
+def _utf8_streams() -> None:
+    """Always write UTF-8: a Windows pipe defaults to the ANSI code page, which cannot encode the trail's glyphs."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+        except (AttributeError, ValueError, OSError):
+            pass
+
+
 def main(argv: Optional[List[str]] = None) -> None:
+    _utf8_streams()
     sys.exit(run(argv))
 
 
