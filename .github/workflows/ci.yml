@@ -130,7 +130,8 @@ jobs:
           working-directory: examples/orders
           command: verify
       - name: tamper with a journal line
-        run: sed -i '3s/"seq": 3/"seq": 33/' examples/orders/audit/sprints/S-2026-21/001-place-order/journal.jsonl
+        run: |
+          sed -i '3s/"seq": 3/"seq": 33/' examples/orders/audit/sprints/S-2026-21/001-place-order/journal.jsonl
       - name: verify again (must fail)
         id: tampered
         continue-on-error: true
