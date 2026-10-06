@@ -93,6 +93,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
+      - name: the shipped views are what render produces   # a stale audit/verify-report.json would rewrite them
+        shell: bash
+        working-directory: examples/orders
+        run: |
+          bash ../../scripts/bash/auditguard.sh render
+          git diff --exit-code -- audit
       - name: bash launcher on the example
         shell: bash
         working-directory: examples/orders
