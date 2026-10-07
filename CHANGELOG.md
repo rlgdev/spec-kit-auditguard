@@ -4,6 +4,13 @@ All notable changes to auditGuard are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- CI runs the integration tests against scopeGuard 0.4.1 and archiGuard 0.1.1, the versions the Guardians
+  bundle 0.1.1 pins (was 0.4.0 and 0.1.0).
+
 ## [0.1.0] - 2026-10-06
 
 First release: the specification "auditGuard for Spec Kit - Specification v1.0" ([docs/specification.md](docs/specification.md),

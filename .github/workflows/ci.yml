@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  SCOPEGUARD_TAG: v0.4.0
-  ARCHIGUARD_TAG: v0.1.0
+  SCOPEGUARD_TAG: v0.4.1
+  ARCHIGUARD_TAG: v0.1.1
 
 jobs:
   test:
