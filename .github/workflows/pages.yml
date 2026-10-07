@@ -28,7 +28,7 @@ jobs:
           python-version: "3.12"
       - working-directory: examples/orders
         run: python ../../scripts/python/auditguard.py render --html
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v3
         with:
           path: examples/orders/audit
