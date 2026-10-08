@@ -10,6 +10,18 @@ All notable changes to auditGuard are documented here. The format follows
 
 - CI runs the integration tests against scopeGuard 0.4.1 and archiGuard 0.1.1, the versions the Guardians
   bundle 0.1.1 pins (was 0.4.0 and 0.1.0).
+- The catalog install instructions add Spec Kit's `default` and `community` catalogs before the auditGuard catalog:
+  a project catalog file replaces Spec Kit's own catalogs, and the earlier instructions hid every other extension of
+  the project from `specify extension search`, `info` and `update`.
+
+### Fixed
+
+- The built-in YAML reader (used without PyYAML) reads quoted scalars folded across lines, as PyYAML's dump writes
+  long ones in Spec Kit's `.specify/extensions.yml`. Without PyYAML, `configure` refused to write the hook registry
+  ("the result would not parse") in every project that also had scopeGuard or archiGuard installed.
+- `configure` keeps the line endings of `.specify/extensions.yml` and `.gitattributes`. Spec Kit writes
+  `.specify/extensions.yml` with CRLF on Windows; rewritten with LF, `git diff` showed every hook of every other
+  extension removed and added again. The audit trail itself stays LF byte for byte.
 
 ## [0.1.0] - 2026-10-06
 

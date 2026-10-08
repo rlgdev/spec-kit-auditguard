@@ -217,3 +217,37 @@ def test_configure_switches_the_hooks(opened):
     assert "enabled: false" in (opened.root / ".specify/extensions.yml").read_text(encoding="utf-8")
     ga = (opened.root / ".gitattributes").read_text(encoding="utf-8")
     assert "audit/**/*.jsonl -text" in ga
+
+
+def test_configure_without_pyyaml_reads_spec_kits_folded_scalars(opened, tmp_path):
+    """Spec Kit's dump folds long quoted descriptions; the built-in reader (no PyYAML) must accept the file."""
+    blocker = tmp_path / "no-pyyaml"
+    blocker.mkdir()
+    (blocker / "yaml.py").write_text("raise ImportError('PyYAML blocked for this test')\n", encoding="utf-8")
+    opened.write(".specify/extensions.yml", (
+        "installed: [scopeguard, auditguard]\nhooks:\n  before_plan:\n"
+        "  - extension: scopeguard\n    command: speckit.scopeguard.inventory\n    enabled: false\n"
+        "    description: '(integration: hooks) Put the full scope contract in front of the\n      planner'\n"
+        "  - extension: auditguard\n    command: speckit.auditguard.planentry\n    enabled: true\n"))
+    opened.write(".specify/extensions/auditguard/auditguard-config.yml", "integration: workflow\n")
+    opened.ag("configure", PYTHONPATH=str(blocker))
+    text = (opened.root / ".specify/extensions.yml").read_text(encoding="utf-8")
+    assert "speckit.auditguard.planentry\n    enabled: false" in text and "      planner'\n" in text
+
+
+def test_configure_keeps_crlf_line_endings(opened):
+    """Spec Kit writes .specify/extensions.yml with CRLF on Windows: configure keeps them, so git shows one line."""
+    registry = ("installed: [git, auditguard]\nhooks:\n  after_plan:\n  - extension: git\n    command: speckit.git.commit\n"
+                "    enabled: true\n  - extension: auditguard\n    command: speckit.auditguard.planexit\n    enabled: true\n")
+    before = registry.replace("\n", "\r\n").encode("utf-8")
+    (opened.root / ".specify/extensions.yml").write_bytes(before)
+    (opened.root / ".gitattributes").write_bytes(b"*.sh text eol=lf\r\n")
+    opened.write(".specify/extensions/auditguard/auditguard-config.yml", "integration: workflow\n")
+    opened.ag("configure")
+    after = (opened.root / ".specify/extensions.yml").read_bytes()
+    assert b"\n" not in after.replace(b"\r\n", b""), after          # every line still ends with CRLF
+    changed = [(a, b) for a, b in zip(before.split(b"\r\n"), after.split(b"\r\n")) if a != b]
+    assert changed == [(b"    enabled: true", b"    enabled: false")]
+    ga = (opened.root / ".gitattributes").read_bytes()
+    assert ga.startswith(b"*.sh text eol=lf\r\n") and b"audit/**/*.jsonl -text\r\n" in ga
+    assert b"\n" not in ga.replace(b"\r\n", b""), ga
