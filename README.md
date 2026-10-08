@@ -76,10 +76,18 @@ newest release. To upgrade, add `--force` to step 1 and run step 2 again; your `
 <details>
 <summary>Install through a catalog (for teams)</summary>
 
+A project catalog file (`.specify/extension-catalogs.yml`) **replaces** Spec Kit's own catalogs, so add those first;
+without them every other extension disappears from `specify extension search`, `info` and `update`. (With a
+user-level `~/.specify/extension-catalogs.yml`, add its entries instead.)
+
 ```bash
-specify extension catalog add https://raw.githubusercontent.com/rlgdev/spec-kit-auditguard/main/catalog/extensions.json --name auditguard --install-allowed
+specify extension catalog add https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.json            --name default    --priority 1  --install-allowed
+specify extension catalog add https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json  --name community  --priority 20 --no-install-allowed
+specify extension catalog add https://raw.githubusercontent.com/rlgdev/spec-kit-auditguard/main/catalog/extensions.json --name auditguard --priority 10 --install-allowed
 specify extension add auditguard
 ```
+
+`community` comes after the auditGuard catalog: it is discovery-only, and the catalog you trust must win a shared id.
 
 For a corporate catalog, mirror the archive into the internal catalog and pin it by version and sha256
 (`dist/SHA256SUMS` is attached to every release).

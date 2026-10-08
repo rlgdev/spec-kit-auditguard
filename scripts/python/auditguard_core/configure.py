@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import __version__, yamlio
-from .common import (EXTENSIONS_YML, HOOK_EVENTS, WORK_REL, AuditGuardError, git, is_git_repo, read_text, rel_path,
-                     version_satisfies, write_text)
+from .common import (EXTENSIONS_YML, HOOK_EVENTS, WORK_REL, AuditGuardError, git, is_git_repo, line_ending, read_text,
+                     rel_path, version_satisfies, write_text)
 from .sprints import Register
 
 GITATTRIBUTES = ["{audit}/**/*.jsonl -text", "{audit}/**/evidence/** -text", "{audit}/**/seal.json -text"]
@@ -110,7 +110,7 @@ def run_configure(root: Path, cfg: Any, dry_run: bool) -> Tuple[str, Dict[str, A
                 yamlio.loads(updated, str(ext_yml))
             except AuditGuardError as exc:
                 raise AuditGuardError(f"refusing to write {EXTENSIONS_YML}: the result would not parse ({exc})")
-            write_text(ext_yml, updated)
+            write_text(ext_yml, updated.replace("\n", line_ending(ext_yml)))
             changes.append(f"{EXTENSIONS_YML.as_posix()}: {sum(1 for f in found if f['was'] != f['now'])} hook(s) switched")
 
     # the audit folder, the register, .gitattributes, the workstation state
@@ -128,7 +128,7 @@ def run_configure(root: Path, cfg: Any, dry_run: bool) -> Tuple[str, Dict[str, A
         if not dry_run:
             text = "\n".join(have).rstrip("\n")
             block = "\n# auditGuard: the audit trail is hashed byte for byte - no line-ending conversion\n" + "\n".join(missing) + "\n"
-            write_text(ga, (text + "\n" if text else "") + block)
+            write_text(ga, ((text + "\n" if text else "") + block).replace("\n", line_ending(ga)))
         changes.append(f".gitattributes: {len(missing)} line(s) added")
     gi = root / WORK_REL / ".gitignore"
     if not gi.is_file():
