@@ -32,7 +32,8 @@ ready when all of it is green.
   functionally identical across the family: `<ID>_PYTHON`, then `python3` / `python` on PATH (the Windows
   Store stub is rejected by a marker check), then specify-cli's Python under `uv tool dir`, then `uv run`.
 - **Line endings.** LF everywhere (`.gitattributes`); files the tools write are LF and UTF-8, except an edit of a
-  file Spec Kit owns (`.specify/extensions.yml`), which keeps that file's line ending (CRLF on Windows).
+  file Spec Kit or the user owns (`.specify/extensions.yml`, `.gitattributes`), which keeps the line ending most of
+  its lines use (CRLF on Windows). The audit trail is always LF.
 - **Configuration.** Unknown keys are errors. A new key gets a commented line in `config-template.yml`, a
   default in the code, a test and a row in `docs/configuration.md`.
 - **Output.** Exit codes `0` ok, `1` findings, `2` cannot run (fail-closed), `3` escalated / reserved for people

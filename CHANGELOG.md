@@ -16,6 +16,9 @@ All notable changes to auditGuard are documented here. The format follows
 
 ### Fixed
 
+- The built-in YAML reader (used without PyYAML) reads quoted scalars folded across lines, as PyYAML's dump writes
+  long ones in Spec Kit's `.specify/extensions.yml`. Without PyYAML, `configure` refused to write the hook registry
+  ("the result would not parse") in every project that also had scopeGuard or archiGuard installed.
 - `configure` keeps the line endings of `.specify/extensions.yml` and `.gitattributes`. Spec Kit writes
   `.specify/extensions.yml` with CRLF on Windows; rewritten with LF, `git diff` showed every hook of every other
   extension removed and added again. The audit trail itself stays LF byte for byte.

@@ -79,3 +79,13 @@ def test_bash_launcher(tmp_path):
         pytest.skip("no bash")
     proc = subprocess.run(["bash", str(REPO / "scripts/bash/auditguard.sh"), "version"], capture_output=True, text=True)
     assert proc.returncode == 0 and __version__ in proc.stdout
+
+
+def test_yaml_reads_spec_kits_folded_quoted_scalars():
+    """Spec Kit writes .specify/extensions.yml with PyYAML's dump, which folds long quoted scalars at 80 columns."""
+    text = ("hooks:\n  before_plan:\n  - extension: scopeguard\n"
+            "    description: '(integration: hooks) Put the full scope contract in front of the\n      planner'\n"
+            "    prompt: \"a \\\"quoted\\\" word, folded\n      here\"  # a comment\n    enabled: true\n")
+    entry = yamlio.parse_builtin(text, "extensions.yml")["hooks"]["before_plan"][0]
+    assert entry == {"extension": "scopeguard", "enabled": True, "prompt": 'a "quoted" word, folded here',
+                     "description": "(integration: hooks) Put the full scope contract in front of the planner"}
