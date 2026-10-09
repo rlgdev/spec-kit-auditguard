@@ -5,5 +5,5 @@ recorded commands, per sprint and feature, verifiable against git and the other 
 Standard library only; Python 3.9+. PyYAML is used when importable.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 TOOL = "auditguard"

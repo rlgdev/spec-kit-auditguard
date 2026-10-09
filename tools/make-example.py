@@ -162,7 +162,10 @@ class Story:
             shutil.copy(ROOT / name, au / name)
         for d in ("scripts", "templates", "commands"):
             shutil.copytree(ROOT / d, au / d, ignore=shutil.ignore_patterns("__pycache__"))
-        shutil.copy(ROOT / "config-template.yml", au / "auditguard-config.yml")
+        # the example shows the complete recorder (sessions, stop, guard, scopeGuard's report, views per hook)
+        (au / "auditguard-config.yml").write_text(
+            (ROOT / "config-template.yml").read_text(encoding="utf-8").replace("\nprofile: light\n", "\nprofile: full\n"),
+            encoding="utf-8")
         self.write(".specify/extensions.yml", "installed:\n  - archiguard\n  - scopeguard\n  - auditguard\nhooks: {}\n")
         self.run("git", "init", "-q", "-b", "main")
         self.git("config", "commit.gpgsign", "false")

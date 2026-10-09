@@ -125,6 +125,7 @@ def guard(p, payload):
 
 
 def test_sc008_guard_blocks_agent_edits_and_human_commands(opened):
+    opened.full()
     root = str(opened.root)
     edit = guard(opened, {"hook_event_name": "PreToolUse", "tool_name": "Edit", "cwd": root,
                           "tool_input": {"file_path": f"{root}/audit/sprints/S-1/_project/journal.jsonl"}})
@@ -161,6 +162,7 @@ def test_decide_needs_a_person(opened):
 
 
 def test_sc010_close_with_an_open_escalation(opened):
+    opened.full()
     (opened.root / ".specify/extensions/archiguard").mkdir(parents=True)
     f = opened.feature()
     opened.hook("before_tasks")

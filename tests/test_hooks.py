@@ -84,6 +84,7 @@ def test_design_reject_reopens(opened):
 
 
 def test_stop_closes_an_escalated_command_at_once(opened):
+    opened.full()
     (opened.root / ".specify/extensions/archiguard").mkdir(parents=True)   # archiGuard installed
     f = opened.feature()
     opened.hook("before_tasks")
@@ -97,6 +98,7 @@ def test_stop_closes_an_escalated_command_at_once(opened):
 
 
 def test_stop_without_escalation_waits_for_the_next_command(opened):
+    opened.full()
     opened.feature()
     opened.hook("before_clarify")
     opened.now = "2026-10-06T09:05:00+02:00"
@@ -124,6 +126,7 @@ def test_outcome_fail_when_the_step_verdict_has_violations(opened):
 
 
 def test_sessions_are_recorded_once(opened):
+    opened.full()
     for _ in range(2):
         opened.event("session_start", {"hook_event_name": "SessionStart", "session_id": "abc", "source": "startup"})
     opened.feature()

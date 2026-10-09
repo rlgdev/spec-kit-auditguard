@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: auditguard
   name: "auditGuard"
-  version: "0.1.0"
+  version: "0.2.0"
   description: "Tamper-evident audit trail of the Spec Kit SDLC: every command by stage, the gate reports of scopeGuard and archiGuard, the waiver history, human decisions and changes outside recorded commands, per sprint and feature, verifiable against git and the other golden sources"
   author: "rlgdev"
   repository: https://github.com/rlgdev/spec-kit-auditguard
@@ -103,7 +103,7 @@ provides:
       description: "Verify every chain, seal and evidence hash, and the trail against git and the other golden sources"
     - name: speckit.auditguard.configure
       file: commands/speckit.auditguard.configure.md
-      description: "Apply auditguard-config.yml to Spec Kit's hooks and show what is in force"
+      description: "Apply auditguard-config.yml (profile, integration) to Spec Kit's hooks and the agent's events, and show what is in force"
     # agent runtime events (wired by Spec Kit; the dispatcher does not pass the event name, so one command per event)
     - name: speckit.auditguard.sessionstart
       file: commands/speckit.auditguard.sessionstart.md

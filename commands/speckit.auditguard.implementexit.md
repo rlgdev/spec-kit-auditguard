@@ -19,9 +19,9 @@ nothing, repairs nothing and never changes the result of `/speckit.implement`.
 
 ## Steps
 
-1. From the repository root run `{SCRIPT}` with the environment variable `AUDITGUARD_CONTEXT=agent` set
-   (bash: `AUDITGUARD_CONTEXT=agent {SCRIPT}`; PowerShell: `$env:AUDITGUARD_CONTEXT='agent'; {SCRIPT}`). If the
-   user input above or the Setup step of `/speckit.implement` names a feature directory, append `--feature-dir <dir>`.
+1. From the repository root run `{SCRIPT}` as it is. If the user input above or the Setup step of
+   `/speckit.implement` names a feature directory, append `--feature-dir <dir>`. Nothing else: no environment
+   variables, no other flags.
 2. Show its one-line output as is. If it prints `skipped`, auditGuard records through workflow steps in this
    project; say nothing more.
 3. Continue with `/speckit.implement`. The script always exits 0 in record mode; if it prints `could not record`,

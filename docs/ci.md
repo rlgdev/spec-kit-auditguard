@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
       - run: git fetch -q origin "refs/notes/*:refs/notes/*" "refs/tags/*:refs/tags/*" || true
-      - uses: rlgdev/spec-kit-auditguard@v0.1.0
+      - uses: rlgdev/spec-kit-auditguard@v0.2.0
         with:
           command: verify
           golden: "true"
@@ -34,7 +34,7 @@ jobs:
       - run: |
           git fetch -q origin "refs/notes/*:refs/notes/*" || true
           git config user.name "audit-bot" && git config user.email "audit-bot@users.noreply.github.com"
-      - uses: rlgdev/spec-kit-auditguard@v0.1.0
+      - uses: rlgdev/spec-kit-auditguard@v0.2.0
         with:
           command: anchor
           push: "true"

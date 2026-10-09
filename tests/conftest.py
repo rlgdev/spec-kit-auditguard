@@ -90,6 +90,14 @@ class Project:
     def open_sprint(self, sid: str = "S-1", start: str = "2026-10-01", end: str = "2026-10-31") -> None:
         self.ag("sprint", "open", sid, "--start", start, "--end", end, "--by", "Roman")
 
+    def config(self, text: str) -> None:
+        self.write(".specify/extensions/auditguard/auditguard-config.yml", text)
+
+    def full(self, extra: str = "") -> None:
+        """The complete recorder (profile: full): sessions, stop, the guard, scopeGuard's report, views per hook.
+        The fixtures run on the default profile (light) unless a test asks for this."""
+        self.config("profile: full\n" + extra)
+
 
 @pytest.fixture
 def project(tmp_path: Path) -> Project:

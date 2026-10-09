@@ -163,6 +163,7 @@ SG = os.environ.get("SCOPEGUARD_SRC")
 
 @pytest.mark.skipif(not SG, reason="set SCOPEGUARD_SRC to a spec-kit-scopeguard checkout")
 def test_real_scopeguard_report(opened):
+    opened.full()                                   # the report subprocess runs in the full profile
     ext = opened.root / ".specify/extensions/scopeguard"
     shutil.copytree(Path(SG) / "scripts", ext / "scripts")
     shutil.copy(Path(SG) / "extension.yml", ext / "extension.yml")

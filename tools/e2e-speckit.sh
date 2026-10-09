@@ -3,7 +3,8 @@
 #   1. builds the archive and serves dist/ on localhost
 #   2. specify init, then installs auditGuard from the archive
 #   3. the 20 hooks are registered and the 4 agent events are wired into the agent's settings
-#   4. configure: hooks on (integration: hooks) and off (integration: workflow)
+#   4. configure: hooks on (integration: hooks) and off (integration: workflow); the light profile unwires the
+#      agent events, the full profile has Spec Kit re-register them
 #   5. a command lifecycle through the rendered hook commands, the agent events through Spec Kit's dispatcher
 #      (session start, guard, stop) and verify
 #
@@ -58,10 +59,17 @@ while read -r p; do
     [[ -e "$p" ]] || fail "rendered path does not exist: $p"
 done < <(grep -rhoE "\.specify/extensions/auditguard/[A-Za-z0-9_./-]+" .claude | sort -u)
 
-echo "== configure"
+echo "== configure (profile: light, the default): hooks on, the agent events unwired"
 expect 0 "${A[@]}" configure
+contains "profile       : light"
 contains "integration   : hooks"
 contains "hooks         : 20 of 20 on"
+contains "agent events  : session_start off"
+contains "changed: .claude/settings.json: 4 agent event(s) unwired"
+grep -q "speckit.auditguard" .claude/settings.json && fail "light profile: auditGuard events still wired in .claude/settings.json"
+grep -q '"__speckit_event__"' .claude/settings.json || echo "   (no other Spec Kit events in this project)"
+expect 0 "${A[@]}" configure
+contains "wired in      : .claude/settings.json -> none"
 git add -A && git commit -qm base
 expect 0 "${A[@]}" sprint open S-1 --start 2026-01-01 --end 2099-12-31 --by e2e
 
@@ -76,8 +84,32 @@ expect 0 "${A[@]}" hook after_plan --via hooks
 contains "command.finished (pass)"
 unset AUDITGUARD_CONTEXT
 
-echo "== agent events through Spec Kit's dispatcher"
+echo "== light: the event handlers do nothing even when invoked"
 export CLAUDE_PROJECT_DIR="$PWD"
+printf '{"hook_event_name":"SessionStart","session_id":"e2e-0","source":"startup"}' | "$PY" .specify/events.py speckit.auditguard.sessionstart session_start 15 \
+    || fail "session_start handler failed"
+grep -q '"kind": "session.started"' audit/sprints/S-1/_project/journal.jsonl && fail "light profile: a session was recorded"
+set +e
+printf '{"hook_event_name":"PreToolUse","tool_name":"Edit","cwd":"%s","tool_input":{"file_path":"%s/audit/sprints.yml"}}' "$PWD" "$PWD" \
+    | "$PY" .specify/events.py speckit.auditguard.guard pre_tool_use 10 2> "$WORK/out.txt"; code=$?
+set -e
+[[ $code == 0 ]] || fail "light profile: the guard blocked (exit $code)"
+[[ ! -f audit/sprints/S-1/001-demo/trail.md ]] || fail "light profile: a view was rebuilt by a hook"
+
+echo "== profile: full - Spec Kit re-registers the events, configure keeps them"
+sed -i.bak 's/^profile: light/profile: full/' .specify/extensions/auditguard/auditguard-config.yml && rm -f .specify/extensions/auditguard/auditguard-config.yml.bak
+expect 0 "${A[@]}" configure
+contains "profile       : full"
+contains "NOT WIRED     : session_start, stop, session_end, pre_tool_use"
+specify extension disable auditguard >/dev/null && specify extension enable auditguard >/dev/null
+for ev in sessionstart stop sessionend guard; do
+    grep -q "speckit.auditguard.$ev" .claude/settings.json || fail "event command speckit.auditguard.$ev not re-wired by specify extension enable"
+done
+expect 0 "${A[@]}" configure
+contains "hooks         : 20 of 20 on"
+contains "wired in      : .claude/settings.json -> session_start, stop, session_end, pre_tool_use"
+
+echo "== agent events through Spec Kit's dispatcher"
 printf '{"hook_event_name":"SessionStart","session_id":"e2e-1","source":"startup"}' | "$PY" .specify/events.py speckit.auditguard.sessionstart session_start 15 \
     || fail "session_start handler failed"
 grep -q '"kind": "session.started"' audit/sprints/S-1/_project/journal.jsonl || fail "session not recorded"

@@ -281,6 +281,8 @@ class Hooks:
 
     def stop(self, payload: Dict[str, Any]) -> str:
         """End of an agent turn: an open command is closed at once when it escalated, otherwise marked stopped."""
+        if not self.cfg.get("events", "stop", default=True):
+            return ""                                    # profile light: the next hook closes an abandoned command
         entries = self.open_entries()
         keep = []
         for entry in entries:

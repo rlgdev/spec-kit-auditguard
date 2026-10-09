@@ -18,6 +18,11 @@ auditGuard is a **recorder, not a gate**: in the default `mode: record` it never
 turns its completeness rules (no implement before a signed design, no sprint closed with an undecided escalation,
 ...) into failures of `auditguard check`, `sprint close` and CI.
 
+It comes in two **profiles**. The default, `light`, records every command the agent runs and what it changed,
+and runs nothing else in the agent's loop. `full` is the complete recorder - agent sessions, a guard on every tool
+call, scopeGuard's coverage report and the rendered views at every hook - for teams that want that precision and
+accept its cost. [Profiles: light and full](#profiles-light-and-full) says exactly what each one does.
+
 ![The overview: features by sprint and stage](docs/img/viewer-overview.png)
 
 ## Why
@@ -39,17 +44,18 @@ exactly that and prints the command that reproduces every finding.
 | What | How auditGuard gets it |
 |------|------------------------|
 | **Commands** | a mandatory hook on `before_*` and `after_*` of all ten Spec Kit commands (`specify`, `clarify`, `plan`, `tasks`, `analyze`, `checklist`, `constitution`, `converge`, `implement`, `taskstoissues`): `command.started` / `command.finished` with the sha256 of every design artefact, the files the command changed (design and code), the outcome and the actor |
-| **Commands that ended early** | the agent's `stop` event: a command whose `after_` hook never ran (an escalation ends it) is closed as `command.abandoned`, with outcome `escalated` |
+| **Commands that ended early** | a command whose `after_` hook never ran (an escalation ends it) is closed as `command.abandoned` with outcome `escalated` - by the next hook (`light`), or at the end of the agent's turn through the `stop` event (`full`) |
 | **Stages** | each command belongs to a stage (data in the config); `stage.entered`, `stage.completed` (by a milestone: the design sign-off, the implement approval, the PR approval) and `stage.reentered` when work goes back |
 | **Gate reports** | collectors read what scopeGuard and archiGuard wrote (step verdicts with their iteration history, scopeGuard's coverage report, escalation notes) and keep content-addressed snapshots as evidence |
 | **Waiver history** | scope deferrals (`## Scope Coverage`), architecture deviations (`## Architecture Conformance`) and archiGuard's decision ledger: `waiver.added`, `changed`, `approved`, `revoked`, `expired`, `removed` |
 | **Human decisions** | archiGuard sign-off and re-open, Spec Kit workflow gate verdicts, ledger ADR status, and `auditguard decide` (escalation answers, design / implement / PR approval, spec changes) - with the person, role and reason |
 | **Changes outside commands** | at every hook the artefact and code hashes are compared with the last record: a hand edit of a signed plan, a command run with hooks skipped, becomes `artefact.changed` with its author |
-| **Sessions** | the agent's `session_start` / `session_end` events; every agent event carries the session id |
+| **Sessions** (`full`) | the agent's `session_start` / `session_end` events; every agent event carries the session id |
 
-The agent cannot write the trail: a `pre_tool_use` guard blocks agent edits under `audit/` and the commands
-reserved for people (`decide`, `note`, `sprint open|close`, `anchor`). It is a convenience; CODEOWNERS on `audit/`
-and `auditguard verify` in CI are the guarantee.
+The agent cannot write the trail: in the `full` profile a `pre_tool_use` guard blocks agent edits under `audit/` and
+the commands reserved for people (`decide`, `note`, `sprint open|close`, `anchor`); with the Guardians bundle
+archiGuard's edit guard covers `audit/` in both profiles. Either is a convenience; CODEOWNERS on `audit/` and
+`auditguard verify` in CI are the guarantee.
 
 ## Install
 
@@ -58,9 +64,9 @@ on `PATH`, the launchers use the Python that ships with `specify-cli`, or `uv`.
 
 ```bash
 # 1. the extension: the recorder, its hooks and agent events, the config file
-specify extension add auditguard --from https://github.com/rlgdev/spec-kit-auditguard/releases/download/v0.1.0/auditguard.zip
+specify extension add auditguard --from https://github.com/rlgdev/spec-kit-auditguard/releases/download/v0.2.0/auditguard.zip
 
-# 2. apply the config: hooks on, the sprint register, .gitattributes for the hash chain
+# 2. apply the config: hooks on, the agent events of the profile, the sprint register, .gitattributes for the chain
 bash .specify/extensions/auditguard/scripts/bash/auditguard.sh configure
 #    Windows: .specify/extensions/auditguard/scripts/powershell/auditguard.ps1 configure
 #    or, inside your agent: /speckit.auditguard.configure
@@ -87,7 +93,81 @@ For a corporate catalog, mirror the archive into the internal catalog and pin it
 </details>
 
 Then use Spec Kit as usual. Commit `audit/` with your work. Protect it with CODEOWNERS (the lead architect), and if
-archiGuard is installed add `"audit/**"` to its `edit_guard.always_readonly` (`configure` prints the line).
+archiGuard is installed add `"audit/**"` to its `edit_guard.always_readonly` (`configure` prints the line; the
+Guardians bundle does it for you).
+
+## Profiles: light and full
+
+A Spec Kit hook is not free: for every `before_*` and `after_*` hook the agent reads the hook command, runs its
+script and reads the output - one agent turn each, twice per Spec Kit command. An agent event is not free either:
+Spec Kit's dispatcher starts a Python process that starts the engine, on **every** tool call for `pre_tool_use` and at
+the end of **every** turn for `stop`. The record of the SDLC lives in the hooks; the events add precision. The profile
+decides how much of that you pay for.
+
+```yaml
+# .specify/extensions/auditguard/auditguard-config.yml
+profile: light     # light (default) | full - then: auditguard configure
+```
+
+| | `light` (default) | `full` |
+|---|---|---|
+| **The 20 hooks** record `command.started` / `command.finished`: artefact and code hashes, `changed`, outcome, actor, git head | yes | yes |
+| **Gate verdicts, escalations, waiver history, sign-offs, workflow gate verdicts** read from what scopeGuard, archiGuard and Spec Kit wrote | yes | yes |
+| **Changes outside commands** (`artefact.changed`) at every hook | yes | yes |
+| **Stages and milestones**, decisions, notes, sprints, seals, anchors, export, `verify --golden` | yes | yes |
+| scopeGuard **coverage report** (`scopeguard.py report --json`, a subprocess) at every hook (`collectors.scopeguard.report`) | no - its history files, report Markdown and escalation notes are read | yes |
+| **Views** (`trail.md`, `sprint.md`, `features/*.md`, `index.md`) rebuilt after every hook (`render.on_hook`) | no - `render`, `collect` and `verify` rebuild them | yes |
+| **`session_start` / `session_end`** events: `session.started` / `session.ended`, the session id on agent events (`sessions.record`) | no | yes |
+| **`stop`** event: a command that ended without its `after_` hook is closed at the end of the turn (`events.stop`) | no - the next hook or `sprint close` closes it, at that time | yes - at once when it escalated, else when the next command starts, at the time of the stop |
+| **`pre_tool_use`** guard: agent edits under `audit/` and the human-only commands are blocked (`guard.enabled`) | no - with the Guardians bundle archiGuard's edit guard still covers `audit/` | yes |
+| Processes per `/speckit.plan`, roughly | 2 engine runs (the two hooks) | 2 engine runs, each with the scopeGuard report subprocess, + 1 dispatcher chain per tool call + 1 per turn |
+
+The profile sets the five keys in parentheses. Any of them written explicitly in the config file wins over the
+profile - `profile: light` with `guard: { enabled: true }` is the light profile plus the guard - and `configure`
+marks such a key `(pinned)`.
+
+**What `configure` does with the agent events.** Spec Kit wires the four events into the agent's hook config at
+`specify extension add` (Claude Code: `.claude/settings.json`). `configure` removes the auditGuard entries of the
+events the profile switches off - only those; archiGuard's entries and your own hooks stay - and reports what is
+wired:
+
+```text
+$ auditguard configure
+auditGuard 0.2.0 | configure
+config: .specify/extensions/auditguard/auditguard-config.yml
+
+  profile       : light  (records the commands; nothing else runs in the agent's loop)
+  integration   : hooks
+  mode          : record  (never blocks)
+  audit folder  : audit/  (register audit/sprints.yml)
+  hooks         : 20 of 20 on
+  per hook      : scopeGuard report not run (history files only) · views on demand (render / collect / verify)
+  agent events  : session_start off · stop off · session_end off · pre_tool_use off
+  wired in      : .claude/settings.json -> none
+  ...
+  changed: .claude/settings.json: 4 agent event(s) unwired (pre_tool_use, session_end, session_start, stop)
+```
+
+`configure` never adds entries to the agent's config. After switching to `full`, it prints `NOT WIRED` and the Spec
+Kit command that re-registers them: `specify extension disable auditguard && specify extension enable auditguard`,
+then `configure` again. A later `specify extension add` or `enable` of any extension re-wires every declared event;
+run `configure` (or the Guardians bundle's `configure`, which calls it) afterwards and the pruning is reapplied.
+
+**What runs during execution, step by step.**
+
+| Moment | `light` | `full` |
+|---|---|---|
+| The agent starts a session | nothing | `session_start` → `session.started` in the project chain; the session id is kept for the events that follow |
+| `/speckit.plan` begins → hook `before_plan` (an agent turn) | resolve feature and sprint; close a command left open by a previous turn (`command.abandoned`); compare the artefact and code hashes with the last record (`artefact.changed` when something changed outside a command); read the siblings' files (gate verdicts, escalations, waivers, sign-offs, workflow runs) and record what is new; `stage.entered` when needed; `command.started` with the hashes | the same, plus `scopeguard.py report --json` for the coverage, plus the Markdown views rebuilt |
+| Every tool call while the agent works (Edit, Write, Bash, ...) | nothing | `pre_tool_use`: dispatcher → engine → exit 2 when the path is under `audit/` or the command is human-only, else exit 0 |
+| `/speckit.plan` ends → hook `after_plan` (an agent turn) | `changed` against the start, outcome (`pass` / `fail` / `escalated` / `error`), duration, the siblings' files read again, `command.finished`; milestones (`design.signed`, ...) when their files appeared | the same, plus the report and the views |
+| The agent's turn ends | nothing | `stop`: an open command that escalated is closed as `command.abandoned (escalated)` now; one that spans turns (`/speckit.clarify` asking a question) is marked and closed at the start of the next command, at the time of the stop |
+| The session ends | nothing | `session_end`: open commands are closed, `session.ended` |
+| `/speckit.auditguard.collect`, `render`, `verify` (a person, a workflow step or CI) | collect new evidence, close commands a `stop` marked, rebuild the views | the same |
+
+What `light` gives up, precisely: the session id on events (`actor.session`), the exact end time of an escalated
+command (it gets the time of the next hook), and the guard. Everything `verify --golden` checks is recorded in both
+profiles; `check` reports a command left open (`commands_closed_before_close`) in both.
 
 ## What the trail looks like
 
@@ -131,7 +211,7 @@ sign-off, a second feature with a deferral, a workflow gate and the PR approval.
 
 ```text
 $ auditguard verify --golden
-auditGuard 0.1.0 | verify --golden | journals 5 · events 66 · evidence 74
+auditGuard 0.2.0 | verify --golden | journals 5 · events 66 · evidence 74
 internal : PASS   3 chain(s) intact · 1 seal(s) match · 74 evidence hash(es) match · register consistent
 golden   : PASS   git ok · handover ok · lock ok · ledger ok · workflow ok · tracker not configured
   G1 commits reachable      66 verified
@@ -199,7 +279,7 @@ a journal changes.
 | `/speckit.auditguard.verify` | verify the trail internally and against the golden sources |
 | `/speckit.auditguard.configure` | apply the config and show what is in force |
 | `/speckit.auditguard.<cmd>entry` / `<cmd>exit` | the 20 hook commands (generated; not for direct use) |
-| `/speckit.auditguard.sessionstart`, `stop`, `sessionend`, `guard` | the agent events (not for direct use) |
+| `/speckit.auditguard.sessionstart`, `stop`, `sessionend`, `guard` | the agent events (not for direct use; wired in the `full` profile) |
 
 The command line (`bash .specify/extensions/auditguard/scripts/bash/auditguard.sh <command>`, or the `.ps1` / `.py`
 launchers):
@@ -222,9 +302,10 @@ auditguard event <session_start|stop|session_end|pre_tool_use>   # agent events,
 auditguard version
 ```
 
-`decide`, `note`, `sprint open|close` and `anchor` are for people: the guard blocks them for agents, and the hook
-commands set `AUDITGUARD_CONTEXT=agent`, which makes them exit 3. Exit codes: `0` ok, `1` verify / check found
-problems, `2` cannot run, `3` a command for people ran in an agent context.
+`decide`, `note`, `sprint open|close` and `anchor` are for people: the hook commands tell the agent never to run
+them, the `full` profile's guard blocks them, and a harness that sets `AUDITGUARD_CONTEXT=agent` for the agent's
+shells makes them exit 3. Exit codes: `0` ok, `1` verify / check found problems, `2` cannot run, `3` a command for
+people ran in an agent context.
 
 ## Configuration
 
@@ -232,6 +313,7 @@ All settings live in `.specify/extensions/auditguard/auditguard-config.yml`, cre
 [`config-template.yml`](config-template.yml). Unknown keys are errors. The main switches:
 
 ```yaml
+profile: light           # light (the hooks record, nothing else runs in the agent's loop) | full (the complete recorder)
 integration: hooks       # hooks | workflow (the hooks print `skipped`; workflow shell steps and CI record)
 mode: record             # record (never blocks) | enforce (check and sprint close fail on a broken rule)
 stages:                  # Spec Kit command -> stage; milestones complete a stage
@@ -243,8 +325,10 @@ golden:
 rules: { implement_requires_design_signed: true, escalations_decided_before_close: true, ... }
 ```
 
-[docs/configuration.md](docs/configuration.md) lists every key. Workstation overrides (`integration`,
-`render.on_hook`, `render.html_on_hook`, `viewer.*`) go in `local-config.yml`; CI ignores them.
+[docs/configuration.md](docs/configuration.md) lists every key; the five the profile sets (`render.on_hook`,
+`sessions.record`, `events.stop`, `guard.enabled`, `collectors.scopeguard.report`) can be pinned individually.
+Workstation overrides (`integration`, `render.on_hook`, `render.html_on_hook`, `viewer.*`) go in `local-config.yml`;
+CI ignores them.
 
 ## CI and workflows
 
@@ -252,7 +336,7 @@ rules: { implement_requires_design_signed: true, escalations_decided_before_clos
 - uses: actions/checkout@v5
   with: { fetch-depth: 0 }                 # the golden checks read the history
 - run: git fetch origin "refs/notes/*:refs/notes/*" "refs/tags/*:refs/tags/*"
-- uses: rlgdev/spec-kit-auditguard@v0.1.0
+- uses: rlgdev/spec-kit-auditguard@v0.2.0
   with:
     command: verify                        # verify | check | render | anchor
     golden: "true"
@@ -270,7 +354,8 @@ and `/speckit.implement`. It only reads what they write. Two practical notes:
 - archiGuard's **A4.6 traceability** requires every commit on the feature branch to name a task and a requirement
   id. Commits of the audit trail on a feature branch must follow it too (`T000 UC-001 audit trail`), or switch the
   commit check off for them in archiGuard (`options: { A4.6: { commits: false } }`).
-- Protect `audit/**` with archiGuard's edit guard as well as auditGuard's (`configure` prints the line).
+- Protect `audit/**` with archiGuard's edit guard (`configure` prints the line; the Guardians bundle writes it). In
+  the `light` profile that is the guard on the trail; in `full`, auditGuard's own guard adds the human-only commands.
 
 ## What auditGuard does and does not prove
 
@@ -280,7 +365,8 @@ and `/speckit.implement`. It only reads what they write. Two practical notes:
 - It proves that a decision was **recorded**, not that it was right: a signed design with weak evidence is still a
   signed design. The evidence snapshots make that review quick.
 - Hook events are as complete as the agent's compliance with mandatory hooks. The reconciliation records every
-  artefact and code change the hooks missed, and G3 catches every commit nothing explains.
+  artefact and code change the hooks missed, and G3 catches every commit nothing explains. The profile changes how
+  much runs around the hooks, not what the hooks record.
 - It does **not** record what happened inside the agent (prompts, tool calls). That is the agent's own log.
 - The Spec Kit project must be the root of its git repository for the git fields and the golden checks (a project in a
   subfolder of a monorepo is recorded without them).

@@ -4,10 +4,21 @@
 # Workstation-only overrides: .specify/extensions/auditguard/local-config.yml (integration, render.on_hook,
 # render.html_on_hook, viewer.*). CI (CI=true) reads only this committed file. Unknown keys are errors.
 #
-# After changing `integration`, apply it to Spec Kit's hooks:
+# After changing `profile`, `integration`, `sessions`, `events` or `guard`, apply it to Spec Kit's hooks and the
+# agent's event config:
 #     bash .specify/extensions/auditguard/scripts/bash/auditguard.sh configure      (or /speckit.auditguard.configure)
 
 version: 1
+
+# light (default): the twenty hooks record each command, what it changed, its outcome and the gate verdicts the
+#                  siblings wrote - and nothing else runs in the agent's loop: no agent events (no session record,
+#                  no stop handler, no pre_tool_use guard), no scopeGuard report subprocess, no views rebuilt per hook.
+# full:            the complete recorder: sessions on every agent event, the stop event closes a command that
+#                  ended without its after_ hook at once, the pre_tool_use guard blocks agent edits of the trail,
+#                  scopeGuard's coverage report runs at every hook, the Markdown views are rebuilt after every hook.
+# The profile sets render.on_hook, sessions.record, events.stop, guard.enabled and collectors.scopeguard.report;
+# any of them set explicitly below wins over the profile.
+profile: full
 
 # hooks:    the twenty before_/after_ hooks of the Spec Kit commands record (default)
 # workflow: the hooks print `skipped`; workflow shell steps (`auditguard hook ... --via workflow`) and CI record
@@ -27,7 +38,8 @@ audit:
     max_file_kb: 512                # larger files: sha256 and source path only
 
 render:
-  on_hook: true                     # rebuild trail.md / sprint.md / features/*.md / index.md after every hook
+  # on_hook: false                  # rebuild trail.md / sprint.md / features/*.md / index.md after every hook
+  #                                 # (profile: light false, full true; without it `render`, `collect` and `verify` rebuild them)
   html_on_hook: false               # also rebuild audit/viewer/data.js after every hook
   expiring_days: 30                 # waivers expiring within this window are open items
 
@@ -36,7 +48,13 @@ viewer:
   theme: auto                       # auto | light | dark
 
 sessions:
-  record: true                      # session.started / session.ended and the session id on agent events
+  # record: false                   # session.started / session.ended and the session id on agent events
+  #                                 # (profile: light false, full true; drives the session_start / session_end events)
+
+events:
+  # stop: false                     # the agent's stop event: a command that ended without its after_ hook (an
+  #                                 # escalation) is closed as command.abandoned at the end of the turn
+  #                                 # (profile: light false, full true; without it the next hook or sprint close closes it)
 
 # Spec Kit command -> stage; a stage is completed by the first of its milestone events.
 stages:
@@ -59,7 +77,8 @@ collectors:
   scopeguard:
     enabled: auto                   # auto = on when the scopeguard extension is installed
     version: ">=0.4,<0.6"
-    report: true                    # run `scopeguard.py report --json` (read-only) for the coverage per phase
+    # report: false                 # run `scopeguard.py report --json` (read-only) at every hook for the coverage per phase
+    #                               # (profile: light false, full true; its history files are read either way)
     timeout: 120
   archiguard:
     enabled: auto
@@ -103,8 +122,9 @@ rules:
   no_unassigned_events: true
   anchored_before_export: false     # export refuses a sprint whose seal is not anchored
 
-# The guard (pre_tool_use): agents never change the trail and never record a person's decision.
+# The guard (pre_tool_use): agents never change the trail and never record a person's decision. With archiGuard
+# installed its edit guard protects the trail too (the Guardians bundle wires that); CODEOWNERS is the guarantee.
 guard:
-  enabled: true
+  # enabled: false                  # (profile: light false, full true)
   readonly: ["audit/**", ".specify/extensions/auditguard/**"]
   human_only: [decide, note, "sprint open", "sprint close", anchor]

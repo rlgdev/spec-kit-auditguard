@@ -7,6 +7,7 @@ unknown keys are errors, so a typo never switches something off silently.
 | Key | Default | Meaning |
 |-----|---------|---------|
 | `version` | `1` | the format version of this file |
+| `profile` | `light` | `light`: the hooks record the commands and nothing else runs in the agent's loop. `full`: the complete recorder. The profile sets `render.on_hook`, `sessions.record`, `events.stop`, `guard.enabled` and `collectors.scopeguard.report` (marked *profile* below); a key set explicitly wins. Run `configure` after changing it ([README: Profiles](../README.md#profiles-light-and-full)). |
 | `integration` | `hooks` | `hooks`: the 20 Spec Kit hooks record. `workflow`: the hooks print `skipped`; workflow shell steps (`auditguard hook <event> --via workflow`) and CI record. Run `configure` after changing it. |
 | `mode` | `record` | `record`: never blocks. `enforce`: `check` and `sprint close` fail on a broken rule; a hook that cannot record exits 2. |
 | `audit.root` | `audit` | the audit folder |
@@ -14,23 +15,24 @@ unknown keys are errors, so a typo never switches something off silently.
 | `audit.unassigned`, `audit.project` | `_unassigned`, `_project` | folder names (reserved) |
 | `audit.evidence.snapshot` | `true` | keep content-addressed snapshots of the reports events reference |
 | `audit.evidence.max_file_kb` | `512` | larger files: hash and source path only |
-| `render.on_hook` | `true` | rebuild the Markdown views after every hook |
+| `render.on_hook` | *profile* (light `false`, full `true`) | rebuild the Markdown views after every hook; `render`, `collect` and `verify` rebuild them in any case |
 | `render.html_on_hook` | `false` | also rebuild `audit/viewer/data.js` after every hook |
 | `render.expiring_days` | `30` | waivers expiring within this window are open items |
 | `viewer.inline_kb` | `64` | evidence embedded in the viewer up to this size |
 | `viewer.theme` | `auto` | `auto`, `light`, `dark` |
-| `sessions.record` | `true` | record agent sessions and put the session id on agent events |
+| `sessions.record` | *profile* (light `false`, full `true`) | record agent sessions (`session_start` / `session_end` events) and put the session id on agent events |
+| `events.stop` | *profile* (light `false`, full `true`) | the agent's `stop` event closes a command that ended without its `after_` hook (an escalation) as `command.abandoned` at the end of the turn; without it the next hook or the sprint close closes it |
 | `stages.<name>.commands` | design / implement / test | the Spec Kit commands of the stage (without `speckit.`) |
 | `stages.<name>.completed_by` | milestones | the event kinds that complete the stage; a following stage without commands is entered when its predecessor completes |
 | `collectors.git.enabled` | `true` | the git fields of every event, `changed` and `commit.merged` |
 | `collectors.git.artefacts` | spec, plan, research, data-model, quickstart, tasks, handover, contracts/**, checklists/** | design artefacts, relative to the feature |
 | `collectors.git.project_artefacts` | `.specify/memory/constitution.md` | artefacts of the project chain |
 | `collectors.git.code` | `src/** app/** lib/** tests/** test/**` | documentation of the code paths (the code tracked for changes is `golden.git.explain_paths` outside `specs/`) |
-| `collectors.scopeguard` | `enabled: auto`, `version: ">=0.4,<0.6"`, `report: true`, `timeout: 120` | |
+| `collectors.scopeguard` | `enabled: auto`, `version: ">=0.4,<0.6"`, `report:` *profile* (light `false`, full `true`), `timeout: 120` | `report` runs `scopeguard.py report --json` at every hook for the coverage per phase; the history files, the report Markdown and the escalation notes scopeGuard writes are read either way |
 | `collectors.archiguard` | `enabled: auto`, `version: ">=0.1,<0.3"`, `ledger: .specify/archiguard/ledger.jsonl` | |
 | `collectors.workflow` | `enabled: true`, `runs: .specify/workflows/runs` | |
 | `collectors.<name>` | - | a plug-in: `command`, `timeout` (`60`), `enabled` (`true`); `version` is accepted and not checked ([collectors.md](collectors.md)) |
-| `golden.git.enabled` | `true` | accepted; not read in 0.1.0 - the git checks run whenever the project is a git repository |
+| `golden.git.enabled` | `true` | accepted; not read yet - the git checks run whenever the project is a git repository |
 | `golden.git.remote`, `golden.git.base` | `origin`, `main` | G1 reachability, G3 range, merges |
 | `golden.git.explain_paths` | `specs/** src/** app/** lib/** tests/** test/** .specify/memory/**` | paths every commit on must be explained (G3) and that are tracked for out-of-band changes |
 | `golden.git.exclude_paths` | `specs/*/gates/** specs/*/.scopeguard/** specs/*/scopeguard-*.md audit/**` | written by the gates and auditGuard themselves |
@@ -42,14 +44,15 @@ unknown keys are errors, so a typo never switches something off silently.
 | `actors.agent` | `auto` | the integration in `.specify/init-options.json` |
 | `actors.ci_env` | `GITHUB_ACTOR`, ... | variables naming the CI actor |
 | `rules.*` | all on except `anchored_before_export` | the completeness rules of `check` / `sprint close` |
-| `guard.enabled`, `guard.readonly`, `guard.human_only` | on, `audit/**` + the extension, decide / note / sprint open / sprint close / anchor | the `pre_tool_use` guard |
+| `guard.enabled`, `guard.readonly`, `guard.human_only` | *profile* (light `false`, full `true`), `audit/**` + the extension, decide / note / sprint open / sprint close / anchor | the `pre_tool_use` guard (the Guardians bundle also puts `audit/**` under archiGuard's edit guard) |
 
 ## Overrides
 
 - `.specify/extensions/auditguard/local-config.yml` (workstation, not committed): `integration`, `render.on_hook`,
   `render.html_on_hook`, `viewer.*`. Other keys are ignored with a note.
-- Environment: `AUDITGUARD_MODE`, `AUDITGUARD_INTEGRATION`, `AUDITGUARD_ACTOR`, `AUDITGUARD_CONTEXT=agent` (set by the
-  hook commands; makes `decide`, `note`, `sprint open|close` and `anchor` exit 3), `AUDITGUARD_PYTHON` (launchers).
+- Environment: `AUDITGUARD_MODE`, `AUDITGUARD_INTEGRATION`, `AUDITGUARD_ACTOR`, `AUDITGUARD_CONTEXT=agent` (when a
+  harness sets it for the agent's shells, `decide`, `note`, `sprint open|close` and `anchor` exit 3), `AUDITGUARD_PYTHON`
+  (launchers).
 - With `CI=true`, `GITHUB_ACTIONS=true` or `AUDITGUARD_CI=1` (the GitHub Action sets it) the local file and
   `AUDITGUARD_INTEGRATION` are ignored.
 

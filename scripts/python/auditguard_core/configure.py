@@ -1,7 +1,9 @@
-"""auditguard configure: apply the config to Spec Kit's hook registry, prepare the project and report what is in force."""
+"""auditguard configure: apply the config to Spec Kit's hook registry and the agent's event config, prepare the
+project and report what is in force."""
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -9,9 +11,87 @@ from typing import Any, Dict, List, Optional, Tuple
 from . import __version__, yamlio
 from .common import (EXTENSIONS_YML, HOOK_EVENTS, WORK_REL, AuditGuardError, git, is_git_repo, read_text, rel_path,
                      version_satisfies, write_text)
+from .config import EVENT_SWITCHES
 from .sprints import Register
 
 GITATTRIBUTES = ["{audit}/**/*.jsonl -text", "{audit}/**/evidence/** -text", "{audit}/**/seal.json -text"]
+
+# the agent event -> the command Spec Kit wires for it (extension.yml `events:`)
+EVENT_COMMANDS = {"session_start": "speckit.auditguard.sessionstart", "stop": "speckit.auditguard.stop",
+                  "session_end": "speckit.auditguard.sessionend", "pre_tool_use": "speckit.auditguard.guard"}
+# the native config files Spec Kit writes the events into, by agent (init-options `ai`): the nested-JSON format
+# (`hooks: {<Event>: [{matcher, hooks: [{type, command, timeout}]}]}`) that `prune_native_events` understands
+NATIVE_EVENT_FILES = {"claude": ".claude/settings.json", "gemini": ".gemini/settings.json",
+                      "qwen": ".qwen/settings.json", "tabnine": ".tabnine/agent/settings.json"}
+CLAUDE_SETTINGS = ".claude/settings.json"
+
+
+def _event_of(command: str) -> Optional[str]:
+    for event, name in EVENT_COMMANDS.items():
+        if name in command:
+            return event
+    return None
+
+
+def prune_native_events(text: str, wanted: Dict[str, bool]) -> Tuple[str, Dict[str, bool], List[str]]:
+    """Remove the auditGuard hook entries of switched-off events from a nested-JSON agent config (Claude Code's
+    `.claude/settings.json` and the like). Returns the new text, which auditGuard events are (still) wired, and the
+    events removed. Other entries, including the siblings', are untouched; an unparsable file is left alone."""
+    try:
+        data = json.loads(text) if text.strip() else {}
+    except ValueError as exc:
+        raise AuditGuardError(f"not valid JSON ({exc})")
+    hooks = data.get("hooks") if isinstance(data, dict) else None
+    present: Dict[str, bool] = {e: False for e in EVENT_COMMANDS}
+    removed: List[str] = []
+    if not isinstance(hooks, dict):
+        return text, present, removed
+    for native in list(hooks):
+        groups = hooks[native]
+        if not isinstance(groups, list):
+            continue
+        kept_groups = []
+        for group in groups:
+            inner = group.get("hooks") if isinstance(group, dict) else None
+            if not isinstance(inner, list):
+                kept_groups.append(group)
+                continue
+            kept = []
+            for entry in inner:
+                event = _event_of(str(entry.get("command", ""))) if isinstance(entry, dict) else None
+                if event is None:
+                    kept.append(entry)
+                elif wanted.get(event, True):
+                    present[event] = True
+                    kept.append(entry)
+                else:
+                    removed.append(event)
+            if kept:
+                kept_groups.append(dict(group, hooks=kept))
+        if kept_groups:
+            hooks[native] = kept_groups
+        else:
+            del hooks[native]
+    if not hooks:
+        del data["hooks"]
+    if not removed:
+        return text, present, removed
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n", present, sorted(set(removed))
+
+
+def native_event_file(root: Path) -> Optional[Path]:
+    """The agent's native event config this project uses, when it is one auditGuard knows how to edit."""
+    opts = root / ".specify" / "init-options.json"
+    agent = None
+    if opts.is_file():
+        try:
+            agent = (json.loads(read_text(opts)) or {}).get("ai")
+        except ValueError:
+            agent = None
+    rel = NATIVE_EVENT_FILES.get(str(agent)) if agent else None
+    if rel is None and (root / CLAUDE_SETTINGS).is_file():
+        rel = CLAUDE_SETTINGS
+    return root / rel if rel else None
 
 
 def _scalar(value: str) -> str:
@@ -136,17 +216,56 @@ def run_configure(root: Path, cfg: Any, dry_run: bool) -> Tuple[str, Dict[str, A
             write_text(gi, "# auditGuard workstation state (open commands, session, locks) - not part of the audit trail\nstate/\n")
         changes.append(f"{rel_path(gi, root)}: created")
 
+    # the agent's native event config: entries of switched-off events are removed (Spec Kit re-adds them all on
+    # the next extension add / enable; configure prunes again)
+    wanted = cfg.events_wanted()
+    native = native_event_file(root)
+    present: Dict[str, bool] = {e: False for e in EVENT_COMMANDS}
+    native_note = ""
+    if native is not None and native.is_file():
+        try:
+            new_text, present, removed = prune_native_events(read_text(native), wanted)
+        except AuditGuardError as exc:
+            native_note = f"{rel_path(native, root)} left alone: {exc}"
+        else:
+            if removed:
+                if not dry_run:
+                    write_text(native, new_text)
+                changes.append(f"{rel_path(native, root)}: {len(removed)} agent event(s) unwired ({', '.join(removed)})")
+    missing = [e for e, on in wanted.items() if on and not present[e]]
+
     hooks_on = sum(1 for f in found if f["now"])
+    switches = cfg.switches()
+
+    def sw(name: str, on_text: str, off_text: str) -> str:
+        value = switches[name]
+        return (on_text if value else off_text) + ("" if not cfg.pinned(*name.split(".")) else " (pinned)")
+
     lines += [
+        f"  profile       : {cfg.profile}" + ("  (records the commands; nothing else runs in the agent's loop)" if cfg.profile == "light"
+                                             else "  (the complete recorder: events, guard, reports, views per hook)"),
         f"  integration   : {integration}",
         f"  mode          : {cfg.mode}" + ("  (check and CI fail on a broken rule)" if cfg.enforce else "  (never blocks)"),
         f"  audit folder  : {audit_rel}/  (register {rel_path(reg_path, root)})",
         f"  hooks         : {hooks_on} of {len(found)} on" + ("" if found else "  (none registered - is the auditguard extension installed?)"),
+        f"  per hook      : scopeGuard report {sw('collectors.scopeguard.report', 'run', 'not run (history files only)')}"
+        f" · views {sw('render.on_hook', 'rebuilt', 'on demand (render / collect / verify)')}",
     ]
-    settings = root / ".claude" / "settings.json"
-    wired = settings.is_file() and "speckit.auditguard" in read_text(settings)
-    lines.append(f"  events        : {'wired into .claude/settings.json' if wired else 'not wired here (agent events are wired by specify extension add for agents that support them)'}"
-                 f" · guard {'on' if cfg.get('guard', 'enabled') else 'off'} · sessions {'recorded' if cfg.get('sessions', 'record') else 'not recorded'}")
+    events_line = " · ".join(
+        f"{e} {'on' if wanted[e] else 'off'}" + (" (pinned)" if cfg.pinned(*EVENT_SWITCHES[e]) else "")
+        for e in EVENT_COMMANDS)
+    lines.append(f"  agent events  : {events_line}")
+    if native is not None and native.is_file():
+        wired = [e for e in EVENT_COMMANDS if present[e]]
+        lines.append(f"  wired in      : {rel_path(native, root)} -> {', '.join(wired) if wired else 'none'}")
+        if missing:
+            lines.append(f"  NOT WIRED     : {', '.join(missing)} - the profile wants them; re-register the extension's events: "
+                         "specify extension disable auditguard && specify extension enable auditguard (then configure)")
+    elif any(wanted.values()):
+        lines.append("  wired in      : no agent event config here (Spec Kit wires the events at specify extension add for"
+                     " agents that support them)")
+    if native_note:
+        lines.append(f"  NOTE: {native_note}")
     # collectors
     lines.append("")
     lines.append("  Collectors:")
@@ -200,5 +319,6 @@ def run_configure(root: Path, cfg: Any, dry_run: bool) -> Tuple[str, Dict[str, A
         lines += [f"  {'would change' if dry_run else 'changed'}: {c}" for c in changes]
     for n in cfg.notes:
         lines.append(f"  NOTE: {n}")
-    return "\n".join(lines), {"integration": integration, "mode": cfg.mode, "hooks": found, "changes": changes,
+    return "\n".join(lines), {"profile": cfg.profile, "integration": integration, "mode": cfg.mode, "hooks": found,
+                              "switches": switches, "events": wanted, "events_wired": present, "changes": changes,
                               "dry_run": dry_run}

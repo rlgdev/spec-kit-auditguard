@@ -279,8 +279,7 @@ def _dispatch(root: Path, cfg: Any, args: argparse.Namespace) -> int:
         if args.all or not targets:
             n += len(run_collectors(rec, None))
         save_baseline(rc)
-        if cfg.get("render", "on_hook", default=True):
-            _render(root, cfg, html=bool(cfg.get("render", "html_on_hook")))
+        _render(root, cfg, html=bool(cfg.get("render", "html_on_hook")))   # collect is explicit: the views follow
         print(f"auditGuard {__version__} | collect | {n} event(s) recorded"
               + (f" ({len(closed)} stopped command(s) closed)" if closed else ""))
         return EXIT_OK

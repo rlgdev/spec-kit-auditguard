@@ -1,7 +1,16 @@
 # auditGuard for Spec Kit — Specification v1.0 (ready to implement)
 
-> **Status:** implemented in auditGuard 0.1.0. The amendments below were made while implementing and testing against
-> Spec Kit 1.0.1 / 1.0.13, scopeGuard 0.4.0 and archiGuard 0.1.0; where the body below differs, the amendment wins.
+> **Status:** implemented in auditGuard 0.1.0; 0.2.0 adds the profiles (A17-A19). The amendments below were made
+> while implementing and testing against Spec Kit 1.0.1 / 1.0.13, scopeGuard 0.4.x and archiGuard 0.1.x; where the
+> body below differs, the amendment wins.
+
+## Amendments in the 0.2.0 implementation
+
+| # | Requirement | Amendment | Why |
+|---|-------------|-----------|-----|
+| A17 | §7.3, FR-003, FR-004, FR-006, FR-404, FR-704, FR-801 | A top-level **`profile`** key: `light` (the new default) or `full`. The profile sets five switches unless the file pins them explicitly: `render.on_hook`, `sessions.record`, the new `events.stop`, `guard.enabled`, `collectors.scopeguard.report`. `light` turns all five off: the 20 hooks still record every command (`command.started` / `command.finished`, artefact and code hashes, `changed`, outcome, the gate verdicts and waiver changes read from the siblings' files, reconciliation); nothing else runs in the agent's loop - no session events, no `stop` handler, no `pre_tool_use` guard, no `scopeguard.py report` subprocess, no views rebuilt per hook. `full` is the recorder as specified in v1.0. | In the first field run `/speckit.plan` took far longer with auditGuard than without: every Spec Kit hook is an agent turn (the agent reads the hook command and runs its script), and every agent event is a process chain (Spec Kit's dispatcher → the engine) on **every** tool call (`pre_tool_use`) and at the end of **every** turn (`stop`). The record of the SDLC is in the hooks; the events add precision (session ids, the exact minute an escalated command ended, a convenience guard) at a cost most teams do not want by default. |
+| A18 | FR-904 (supersedes the second half of A14) | `configure` now also edits the agent's native event config when it is one of the nested-JSON files Spec Kit writes (Claude Code `.claude/settings.json`, Gemini, Qwen, Tabnine): it **removes** the auditGuard entries of switched-off events (only those; the siblings' and the user's own entries stay) and reports which auditGuard events are wired. It never adds entries: when the profile wants an event that is not wired (after switching to `full`), it prints `NOT WIRED` and the Spec Kit command that re-registers them (`specify extension disable auditguard && specify extension enable auditguard`, then `configure`). A Spec Kit `extension add` / `enable` re-wires every declared event; `configure` prunes again. | The dispatcher resolves events from `extension.yml`, which cannot vary by project; the only place where an event can be switched off per project is the agent's own hook config. |
+| A19 | FR-004, FR-401, §7.2 | Without the `stop` event an open command is closed as `command.abandoned` by the next `before_` hook (source `hook:next-command`, at the time of that hook), by `session_end` when wired, or by `sprint close`; `collect` closes only commands a `stop` marked. `collect` always rebuilds the views (it is an explicit action, not a hook). The hook command template no longer asks the agent to set `AUDITGUARD_CONTEXT=agent` (the variable protected nothing in a hook's own process; it stays honoured when a harness sets it). | Fewer steps for the agent per hook; the Windows PowerShell form of the variable was a source of retries. |
 
 ## Amendments in the 0.1.0 implementation
 

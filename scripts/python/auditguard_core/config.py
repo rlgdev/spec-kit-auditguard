@@ -12,6 +12,7 @@ from .common import CONFIG_REL, LOCAL_CONFIG_RELS, AuditGuardError, is_ci
 
 DEFAULTS: Dict[str, Any] = {
     "version": 1,
+    "profile": "light",
     "integration": "hooks",
     "mode": "record",
     "audit": {
@@ -24,6 +25,7 @@ DEFAULTS: Dict[str, Any] = {
     "render": {"on_hook": True, "html_on_hook": False, "expiring_days": 30},
     "viewer": {"inline_kb": 64, "theme": "auto"},
     "sessions": {"record": True},
+    "events": {"stop": True},
     "stages": {
         "design": {"commands": ["constitution", "specify", "clarify", "plan", "tasks", "analyze", "checklist",
                                 "taskstoissues"],
@@ -79,11 +81,44 @@ DEFAULTS: Dict[str, Any] = {
     },
 }
 
+# The profile sets the switches that decide how much runs around the agent's work. A key set explicitly in
+# the config file wins over the profile. `light` (the default) records the commands and what they changed
+# and nothing else runs in the agent's loop: no agent events, no report subprocess, no re-render per hook.
+# `full` is the complete recorder: sessions, the stop event, the pre_tool_use guard, scopeGuard's coverage
+# report at every hook, and the Markdown views rebuilt after every hook.
+PROFILES: Dict[str, Dict[str, Any]] = {
+    "light": {
+        "render": {"on_hook": False},
+        "sessions": {"record": False},
+        "events": {"stop": False},
+        "guard": {"enabled": False},
+        "collectors": {"scopeguard": {"report": False}},
+    },
+    "full": {
+        "render": {"on_hook": True},
+        "sessions": {"record": True},
+        "events": {"stop": True},
+        "guard": {"enabled": True},
+        "collectors": {"scopeguard": {"report": True}},
+    },
+}
+PROFILE_KEYS = (("render", "on_hook"), ("sessions", "record"), ("events", "stop"), ("guard", "enabled"),
+                ("collectors", "scopeguard", "report"))
+
+# the agent runtime events (extension.yml `events:`) and the switch each one follows
+EVENT_SWITCHES = {
+    "session_start": ("sessions", "record"),
+    "stop": ("events", "stop"),
+    "session_end": ("sessions", "record"),
+    "pre_tool_use": ("guard", "enabled"),
+}
+
 KNOWN_COLLECTORS = ("git", "scopeguard", "archiguard", "workflow")
 PLUGIN_COLLECTOR_KEYS = {"enabled", "command", "timeout", "version"}
 STAGE_KEYS = {"commands", "completed_by"}
 LOCAL_OVERRIDABLE = {("integration",), ("render", "on_hook"), ("render", "html_on_hook"), ("viewer",)}
 CHOICES = {
+    ("profile",): tuple(PROFILES),
     ("integration",): ("hooks", "workflow"),
     ("mode",): ("record", "enforce"),
     ("viewer", "theme"): ("auto", "light", "dark"),
@@ -95,6 +130,8 @@ def _merge(base: Dict[str, Any], over: Dict[str, Any]) -> Dict[str, Any]:
     for key, value in (over or {}).items():
         if isinstance(value, dict) and isinstance(out.get(key), dict) and key not in ("stages",):
             out[key] = _merge(out[key], value)
+        elif value is None and isinstance(out.get(key), dict):
+            continue                    # `sessions:` with every key commented out: the defaults stay
         else:
             out[key] = copy.deepcopy(value)
     return out
@@ -148,11 +185,13 @@ def _validate(data: Dict[str, Any], where: str) -> List[str]:
 
 
 class Config:
-    def __init__(self, root: Path, data: Dict[str, Any], sources: List[str], notes: List[str]):
+    def __init__(self, root: Path, data: Dict[str, Any], sources: List[str], notes: List[str],
+                 pinned: Optional[set] = None):
         self.root = root
         self.data = data
         self.sources = sources
         self.notes = notes
+        self.pinned_keys = pinned or set()   # profile switches the config file sets explicitly
 
     def __getitem__(self, key: str) -> Any:
         return self.data[key]
@@ -172,6 +211,22 @@ class Config:
     @property
     def enforce(self) -> bool:
         return self.data["mode"] == "enforce"
+
+    @property
+    def profile(self) -> str:
+        return self.data.get("profile") or "light"
+
+    def pinned(self, *keys: str) -> bool:
+        """True when the config file sets this profile switch explicitly (the profile did not decide it)."""
+        return tuple(keys) in self.pinned_keys
+
+    def switches(self) -> Dict[str, Any]:
+        """The profile switches as in force: dotted key -> value."""
+        return {".".join(keys): self.get(*keys) for keys in PROFILE_KEYS}
+
+    def events_wanted(self) -> Dict[str, bool]:
+        """Which agent runtime events should be wired, per EVENT_SWITCHES."""
+        return {event: bool(self.get(*keys, default=True)) for event, keys in EVENT_SWITCHES.items()}
 
     def path(self, value: Optional[str]) -> Optional[Path]:
         if not value:
@@ -215,11 +270,20 @@ def load_config(root: Path, explicit: Optional[str] = None) -> Config:
     if explicit and not cfg_path.is_file():
         raise AuditGuardError(f"config file not found: {cfg_path}")
     errors: List[str] = []
+    user: Dict[str, Any] = {}
     if cfg_path.is_file():
-        user = yamlio.load_file(cfg_path)
+        user = yamlio.load_file(cfg_path) or {}
         errors += _validate(user, str(cfg_path))
-        data = _merge(data, user)
         sources.append(str(cfg_path))
+    # the profile decides the switches of PROFILE_KEYS; a key the file sets explicitly wins
+    profile = user.get("profile") if isinstance(user, dict) else None
+    if profile in PROFILES:
+        data = _merge(data, PROFILES[profile])
+    elif profile is None:
+        data = _merge(data, PROFILES[DEFAULTS["profile"]])
+    pinned = {keys for keys in PROFILE_KEYS if _has(user, keys)}
+    if user:
+        data = _merge(data, user)
     if not is_ci():
         for rel in LOCAL_CONFIG_RELS:
             local = root / rel
@@ -253,4 +317,13 @@ def load_config(root: Path, explicit: Optional[str] = None) -> Config:
     errors += _validate({k: data[k] for k in ("integration", "mode")}, "effective config")
     if errors:
         raise AuditGuardError("invalid configuration:\n  " + "\n  ".join(errors))
-    return Config(root, data, sources, notes)
+    return Config(root, data, sources, notes, pinned)
+
+
+def _has(data: Any, keys: tuple) -> bool:
+    cur = data
+    for k in keys:
+        if not isinstance(cur, dict) or k not in cur:
+            return False
+        cur = cur[k]
+    return True
