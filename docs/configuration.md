@@ -25,7 +25,7 @@ unknown keys are errors, so a typo never switches something off silently.
 | `stages.<name>.commands` | design / implement / test | the Spec Kit commands of the stage (without `speckit.`) |
 | `stages.<name>.completed_by` | milestones | the event kinds that complete the stage; a following stage without commands is entered when its predecessor completes |
 | `collectors.git.enabled` | `true` | the git fields of every event, `changed` and `commit.merged` |
-| `collectors.git.artefacts` | spec, plan, research, data-model, quickstart, tasks, handover, contracts/**, checklists/** | design artefacts, relative to the feature |
+| `collectors.git.artefacts` | spec, plan, research, data-model, quickstart, tasks, handover, scopeguard-stamp.json, contracts/**, checklists/** | design artefacts, relative to the feature (the stamp is scopeGuard 0.5's record of the scope at hand-over) |
 | `collectors.git.project_artefacts` | `.specify/memory/constitution.md` | artefacts of the project chain |
 | `collectors.git.code` | `src/** app/** lib/** tests/** test/**` | documentation of the code paths (the code tracked for changes is `golden.git.explain_paths` outside `specs/`) |
 | `collectors.scopeguard` | `enabled: auto`, `version: ">=0.4,<0.6"`, `report:` *profile* (light `false`, full `true`), `timeout: 120` | `report` runs `scopeguard.py report --json` at every hook for the coverage per phase; the history files, the report Markdown and the escalation notes scopeGuard writes are read either way |

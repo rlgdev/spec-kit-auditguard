@@ -6,6 +6,18 @@ All notable changes to auditGuard are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `collectors.git.artefacts` includes `scopeguard-stamp.json`, the scope stamp scopeGuard 0.5 writes at the first
+  `/speckit.plan`: every command records its hash, and a re-stamp outside a command (a person approving a scope change
+  by hand) is an `artefact.changed` event with its author. Until a project adopts this default, the golden check G3
+  already reports a commit that touches the stamp outside a recorded command (`specs/**` is explained).
+
+### Changed
+
+- CI tests the scopeGuard and archiGuard integrations against scopeGuard 0.5.0 and archiGuard 0.1.2, the versions the
+  Guardians bundle 0.1.3 pins.
+
 ## [0.2.0] - 2026-10-09
 
 The first field run showed `/speckit.plan` taking far longer with auditGuard than without. The cause was not the

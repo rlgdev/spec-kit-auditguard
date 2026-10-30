@@ -37,7 +37,7 @@ DEFAULTS: Dict[str, Any] = {
         "git": {
             "enabled": True,
             "artefacts": ["spec.md", "plan.md", "research.md", "data-model.md", "quickstart.md", "tasks.md",
-                          "handover.yml", "contracts/**", "checklists/**"],
+                          "handover.yml", "scopeguard-stamp.json", "contracts/**", "checklists/**"],
             "project_artefacts": [".specify/memory/constitution.md"],
             "code": ["src/**", "app/**", "lib/**", "tests/**", "test/**"],
         },
