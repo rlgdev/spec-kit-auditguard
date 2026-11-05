@@ -5,24 +5,32 @@
   "at": "2026-10-17T17:00:00+02:00",
   "journals": {
     "001-place-order/journal.jsonl": {
-      "head": "b771d884f42c5ab0b5b8f1cb54ac4f2dc0a01a8cdc799c1c9ff86ab44f5d2b82",
+      "head": "56efdb4ad0218becfe2db3361b5ef494b88bc5ffd0b0a09a05181d154010bae3",
       "count": 26,
       "first_seq": 1,
       "last_seq": 26,
-      "file_sha256": "c388d70f7e500dea313dfdeae51d464ced9bd7ab55519bed26b02385f33cee32"
+      "file_sha256": "6f47dd09d110cba29857d4b4e119286faff49a7379aa55260da131bebd7aa928"
     },
     "_project/journal.jsonl": {
-      "head": "132124de913b3bff3584aef5b016052170db103c7f6819b0378352783be64a2b",
+      "head": "c1fcc5e393810c8058f63397fdf50d42a1acb194d97fef7b8a74b38210d72be3",
       "count": 8,
       "first_seq": 1,
       "last_seq": 8,
-      "file_sha256": "acc5a1a3cd3a1de8bea8af61a348f8229ae8526004186435fc4d11aa8f09c770"
+      "file_sha256": "31e379d29bf1d6d88c6025310ce00e9a2dac1cc4693fc597f5eac04ac62ff0ba"
     }
   },
   "evidence": {
     "count": 37,
-    "sha256_of_sorted_hashes": "208c4df1f7f488b58b64dab8c4c20a11ab0b6cc70f0df9e73ceb92fdc02bc1ab"
+    "sha256_of_sorted_hashes": "25694b7ddeffd9f25e2f4b165e4a87910594ece11eecda630705b726d65c7797"
   },
   "warnings": [],
-  "hash": "dd4978bb88433950f276986f60158550e09097c717e2a745638cd089b08897a8"
+  "feedback": {
+    "new": 0,
+    "deferred": 0,
+    "accepted": 0,
+    "in_backlog": 0,
+    "rejected": 0,
+    "resolved": 0
+  },
+  "hash": "a78bfe4ca0bcbd96da69b33311f7fe8a1fb8c5c8a8a1151b68ba10859e3f69d3"
 }

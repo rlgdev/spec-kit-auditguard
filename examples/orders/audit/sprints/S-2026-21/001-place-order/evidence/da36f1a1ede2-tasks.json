@@ -1,0 +1,37 @@
+{
+  "gate": "scope",
+  "guardrail": "tasks-scope-coverage-plan-->-tasks",
+  "check": "tasks",
+  "guardrail_version": "0.2.0",
+  "subject": {
+    "feature": "specs/001-place-order",
+    "commit": "0375e4c81c9da31f41a569f1f0bfae5292e364d8",
+    "stage": "tasks"
+  },
+  "pins": {
+    "rulebook": "acme-standards@v2026.10.1",
+    "lock": "sha256:999b10511cce4ddd5d61ab8a8d0f3f82555312fc126a3ed4585b48e9b8a38bd7",
+    "domain_map": "1.4.0",
+    "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
+  },
+  "status": "pass",
+  "mode": "enforce",
+  "findings": [],
+  "waived": [],
+  "rules_skipped": [],
+  "iteration": 0,
+  "max_iterations": 3,
+  "data": {
+    "engine": "scopeguard 0.4.1",
+    "summary": {
+      "items": 7,
+      "pass": 7,
+      "waived": 0,
+      "violation_items": 0,
+      "violations": 0,
+      "warnings": 0,
+      "in_scope": 7,
+      "coverage_pct": 100.0
+    }
+  }
+}

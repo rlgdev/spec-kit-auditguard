@@ -1,0 +1,162 @@
+{
+  "tool": "archiguard",
+  "kind": "loop-feedback",
+  "schema": 1,
+  "guardrail_version": "0.2.0",
+  "feature": "specs/001-place-order",
+  "status": "evaluated",
+  "computed_at": "2026-10-20T11:15:00+02:00",
+  "computed_by": "implement-b",
+  "commit": "64183743a054b237546acb05e9de8c3aeece2134",
+  "base": "main",
+  "repository": "origin",
+  "pins": {
+    "rulebook": "acme-standards@v2026.10.1",
+    "lock": "sha256:999b10511cce4ddd5d61ab8a8d0f3f82555312fc126a3ed4585b48e9b8a38bd7",
+    "domain_map": "1.4.0",
+    "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
+  },
+  "home_context": "orders",
+  "topology": {
+    "answer": "existing",
+    "units": [
+      {
+        "root": ".",
+        "marker": "pom.xml",
+        "new": false,
+        "contexts": [
+          "orders",
+          "payments"
+        ],
+        "files": 6,
+        "declared": []
+      }
+    ]
+  },
+  "summary": {
+    "items": 4,
+    "high": 0,
+    "medium": 2,
+    "low": 2,
+    "by_kind": {
+      "cross-context": 1,
+      "topology": 1,
+      "vocabulary": 1,
+      "map-gap": 1
+    }
+  },
+  "items": [
+    {
+      "id": "LF-885c1908",
+      "kind": "cross-context",
+      "subject": "orders->payments",
+      "title": "The orders feature changed code of payments",
+      "observation": "2 changed code files belong to context 'payments' (owner: Payments domain owner); the feature's home context is 'orders'.",
+      "suggestion": "2 files of payments changed by this orders feature under the customer-supplier relation: plan the change as a payments backlog item owned by Payments domain owner, or record a partnership / shared kernel if the two contexts evolve together.",
+      "for": [
+        {
+          "role": "domain owner",
+          "context": "payments",
+          "name": "Payments domain owner"
+        },
+        {
+          "role": "lead architect"
+        }
+      ],
+      "target": "domain-map: relations",
+      "impact": "medium",
+      "waiver": null,
+      "evidence": [],
+      "first_seen": "2026-10-20T11:15:00+02:00",
+      "occurrences": {
+        "count": 2,
+        "items": [
+          "src/main/java/com/acme/payments/api/PaymentsClient.java",
+          "src/main/java/com/acme/payments/internal/PaymentGateway.java"
+        ]
+      }
+    },
+    {
+      "id": "LF-2ba4e67d",
+      "kind": "topology",
+      "subject": "orders:undeclared",
+      "title": "The deployment unit of orders is not declared",
+      "observation": "Context 'orders' declares no deployable in domain map 1.4.0; this feature changed code in the unit(s) '.'.",
+      "suggestion": "Declare the deployment unit(s) of orders in the domain map (contexts.orders.deployable, deployables.<name>), so the next feature can tell a new service from an existing one.",
+      "for": [
+        {
+          "role": "lead architect"
+        }
+      ],
+      "target": "domain-map: contexts.orders.deployable, deployables",
+      "impact": "medium",
+      "waiver": null,
+      "evidence": [],
+      "first_seen": "2026-10-20T11:15:00+02:00",
+      "occurrences": {
+        "count": 1,
+        "items": [
+          "."
+        ]
+      }
+    },
+    {
+      "id": "LF-831ba84c",
+      "kind": "vocabulary",
+      "subject": "orders:shipment",
+      "title": "'Shipment' is not a term of orders",
+      "observation": "The data model or a contract uses 'Shipment', which is not in the glossary, the owned entities or the synonyms of 'orders' (or of a related context) in domain map 1.4.0.",
+      "suggestion": "Add Shipment to the glossary of orders (or as a synonym of an existing term) in the next domain map version, or rename it in the data model and contracts.",
+      "for": [
+        {
+          "role": "domain owner",
+          "context": "orders",
+          "name": "Orders domain owner"
+        },
+        {
+          "role": "BA"
+        }
+      ],
+      "target": "domain-map: contexts.orders.glossary",
+      "impact": "low",
+      "waiver": null,
+      "evidence": [
+        {
+          "path": "specs/001-place-order/data-model.md"
+        }
+      ],
+      "first_seen": "2026-10-20T11:15:00+02:00",
+      "occurrences": {
+        "count": 1,
+        "items": [
+          "data-model.md:15"
+        ]
+      }
+    },
+    {
+      "id": "LF-c90bb238",
+      "kind": "map-gap",
+      "subject": "customers:no-code",
+      "title": "Context customers declares no code paths",
+      "observation": "Context 'customers' has no code paths in domain map 1.4.0, so A4.4 cannot attribute its files (it declares the modules com.acme.customers).",
+      "suggestion": "Declare the code paths of customers (contexts.customers.code) so the context-boundary fitness function covers it.",
+      "for": [
+        {
+          "role": "lead architect"
+        }
+      ],
+      "target": "domain-map: contexts.customers.code",
+      "impact": "low",
+      "waiver": null,
+      "evidence": [],
+      "first_seen": "2026-10-20T11:15:00+02:00",
+      "occurrences": {
+        "count": 0,
+        "items": []
+      }
+    }
+  ],
+  "resolved": [],
+  "skipped": [],
+  "truncated": 0
+}

@@ -34,6 +34,13 @@ backlog candidates. Nothing of it can block a command
 - **Seal**: `seal.json` counts the sprint's items by status (`feedback`, inside the hash).
 - **Rule** `feedback_triaged_before_close` (off by default; `[WARN]` in record, `[FAIL]` in enforce).
 - `configure` shows whether the loop feedback is recorded; its JSON has `feedback_recorded`.
+- `examples/orders` (regenerated with archiGuard 0.2.0): the loop feedback of 001-place-order, its triage by the lead
+  architect and the domain owner, and the backlog export `audit/backlog-S-2026-22.csv`.
+
+### Changed
+
+- `tools/make-example.py` sets `ARCHIGUARD_TODAY` to the story's clock, so archiGuard's ledger dates and expiry checks
+  follow the story instead of the day the example is generated.
 
 ## [0.2.0] - 2026-10-09
 

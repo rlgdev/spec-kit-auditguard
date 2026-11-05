@@ -222,7 +222,7 @@ footer.foot { max-width: 1320px; margin: 0 auto; padding: 0 24px 30px; color: va
     return;
   }
   var STAGE_LABEL = { design: "Design", implement: "Implement", test: "Test" };
-  var GROUPS = ["command", "stage", "gate", "waiver", "decision", "escalation", "change", "session", "sprint", "note"];
+  var GROUPS = ["command", "stage", "gate", "waiver", "decision", "escalation", "feedback", "change", "session", "sprint", "note"];
   var LABEL_TEXT = { verified: "verified", ephemeral: "ephemeral", unanchored: "not anchored yet", mismatch: "mismatch" };
   var state = { q: "", stage: null, group: null, actor: null, label: null, open: {} };
   var byHash = {};
@@ -560,12 +560,13 @@ footer.foot { max-width: 1320px; margin: 0 auto; padding: 0 24px 30px; color: va
     var oi = D.open_items || {};
     var node = h("div", null, banners(), h("h1", null, "Human decisions"),
       h("p", { class: "lede" }, "Every sign-off, re-open, workflow gate verdict, escalation answer and approval, with the person who took it."));
-    var pending = [].concat(oi.escalations || [], oi.decisions || []);
+    var pending = [].concat(oi.escalations || [], oi.decisions || [], oi.feedback || []);
     node.appendChild(h("h2", null, "Waiting for a decision"));
     if (pending.length) {
       var t = h("table", { class: "grid" }, h("tr", null, h("th", null, "Item"), h("th", null, "How to decide")));
       (oi.escalations || []).forEach(function (x) { t.appendChild(h("tr", { class: "pending" }, h("td", null, "Escalation " + x), h("td", null, h("code", null, "auditguard decide escalation:" + x.split(": ").pop() + " accept --by <name> --reason <text>")))); });
       (oi.decisions || []).forEach(function (x) { t.appendChild(h("tr", { class: "pending" }, h("td", null, x), h("td", null, h("code", null, "auditguard decide spec-change accept --by <name>")))); });
+      (oi.feedback || []).forEach(function (x) { t.appendChild(h("tr", { class: "pending" }, h("td", null, "Loop feedback " + x), h("td", null, h("code", null, "auditguard decide feedback:" + x.split(" ")[0] + " accept --by <name> [--ref <tracker key>]")))); });
       node.appendChild(h("div", { class: "table-wrap" }, t));
     } else node.appendChild(h("p", { class: "empty" }, "Nothing is waiting for a person."));
     node.appendChild(h("h2", null, "Recorded"));

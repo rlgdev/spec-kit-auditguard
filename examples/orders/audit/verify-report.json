@@ -1,32 +1,32 @@
 {
   "v": 1,
   "generated": "2026-10-23T09:40:00+02:00",
-  "auditguard": "0.1.0",
+  "auditguard": "0.3.0",
   "internal": {
     "status": "pass",
     "journals": 5,
-    "events": 66,
-    "evidence": 74,
+    "events": 74,
+    "evidence": 75,
     "chains": {
       "001-place-order": {
-        "seq": 42,
-        "hash": "8f08c8b68893b8d45af6666d8737cba6728406f863059a634ecaa322d3476ba6",
+        "seq": 47,
+        "hash": "f93c2b8521c0cde17a7a3211f4fd78e208d083b9f089e0e6adaa02c40849faad",
         "sprint": "S-2026-22"
       },
       "002-refunds": {
         "seq": 9,
-        "hash": "be478b7609a58b60fdd8034cf803cf5436e127856e5e16f98b9fdcb0436b6d7e",
+        "hash": "3b39c01f4924b0d40833bcee834e54f7c7dea92183ae1ad60f8a840a583fc7ab",
         "sprint": "S-2026-22"
       },
       "_project": {
-        "seq": 15,
-        "hash": "f4a5b25f86725215a09966e2eb2ee79d0df67531e40221010dc8e608b19aa6b1",
+        "seq": 18,
+        "hash": "f34aed74055478283f32205c9885216098e7be3c496d71231b97fed53d1b6810",
         "sprint": "S-2026-22"
       }
     },
     "seals": {
       "S-2026-21": {
-        "hash": "dd4978bb88433950f276986f60158550e09097c717e2a745638cd089b08897a8",
+        "hash": "a78bfe4ca0bcbd96da69b33311f7fe8a1fb8c5c8a8a1151b68ba10859e3f69d3",
         "ok": true,
         "at": "2026-10-17T17:00:00+02:00",
         "closed_by": "Roman"
@@ -51,7 +51,7 @@
     },
     "checks": {
       "G1": {
-        "verified": 66
+        "verified": 74
       },
       "G2": {
         "verified": 14,
@@ -62,7 +62,7 @@
         "unexplained": 0
       },
       "G4": {
-        "verified": 12,
+        "verified": 13,
         "ephemeral": 2,
         "unanchored": 1
       },
@@ -73,7 +73,7 @@
         "verified": 1
       },
       "G7": {
-        "verified": 66,
+        "verified": 74,
         "unanchored": 0
       },
       "G8": {
@@ -83,126 +83,147 @@
     "anchors": {
       "notes": 2,
       "latest": {
-        "commit": "825ad859786c51fd65f1a828b760a60000b8ab2f",
+        "commit": "ce03d8e5c992dbbce7a6b9aaceb7d6dfc0e5c904",
         "at": "2026-10-23T09:30:00+02:00",
         "by": "Roman"
       },
       "pushed": true
     },
     "events": {
-      "18e0dab12bd5e4485a1af9ebd377eb1f480465f4d7a3c9f57d2180f0a1a11c24": {
+      "24554faced8cb179329de6839f0f52a37bdacf37064b679c25b6335ac3f87871": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "a10acfb1efa4122a7bd3b5a1c2ab793d8066f2c75d9cb4d4d966a9924e372f0b": {
+      "fe3e9c4a1ba0bf1663b49e79f95d481d5ccbba733ac9d553d656e9aa31bd95f3": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "c072104d5d315ba58b1a8838eb0d2fb151f544e0a4a63bbd11d7cd5027baa039": {
+      "97064458986786c0765080d718e7cd1dae926c5d4033b9ba2d4f427e9d405d98": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "d159264ed7d1c402afaa7554ab2c9078523d9d4b7b85b61949c27f45ffa57337": {
+      "5b71c333b7799c486b566f1c23e8e545bce8099a8657d463242d7ba96cc45444": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "c6c963adfef774d06841b96c8509585a2275fb450b97121debd946349b098ff3": {
+      "704c31a9cf48e8b8d5b372220c1bb155ad07a42e83b9046889e64532b86e56ed": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "a19abd7778149980d48a6f8eae7fd2ec7812a4d04e4b6ae641b76c7ca00ab413": {
+      "1e3b0b46c64d40b1be76d5a797241aa7e652d00039f7577ac9c2dd012d128b27": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "33cff517874795921d81d7b9ec00f45dac635f3fbf9070540ed7585682419aa5": {
+      "836a6eeee3bbbde0cb458c592ba4407cfc446d3d6e272588e562fe8f712c06dd": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "132124de913b3bff3584aef5b016052170db103c7f6819b0378352783be64a2b": {
+      "c1fcc5e393810c8058f63397fdf50d42a1acb194d97fef7b8a74b38210d72be3": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "0858d38de2db3d1c73a8b70bbc587a385ca8cff1dffa592cc1896c8c0f654cd3": {
+      "e4e54aa3a60bfcc01e02c3082d7f458fe11a341e07fb5c3655e356a47049a7ed": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "47e3e6c945d6dc121047d84492570fd6202081c82277bb739ed26928e9842b56": {
+      "72e2235b561d55172c5fbf221c771a332831fe7705ade3e6317d392a37d5b814": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "56f5ad187fe700f3772c9e18094fc46fb9bbf6427dcebce49e4b02771efe0d8a": {
+      "31d841e7c72c21ca2c169f3bf0f77e0421fdf1d4481912f8d0fdb3e2e7d742c5": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "1292760afcc5c4396a9d1e3cd32eeb7fd7b10bfd1773d2d68be336ab67a04b26": {
+      "42df16ed5e6febb02be7f786f771d4e3eeda1e7e52c966f7bc08ed041d9252db": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "c071f2eb21423a8ac4ab1ffd5bf831ea265a5c9fd411ac1806855c4e2d9b43ee": {
+      "61b7cc513644dceb84ff06a08bb01c0bced04777ebe9f46459a3d7766c0fa07f": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "1adbea6a396a1cf362caf8c59d13da81d963af19383bcfd5e4b4364b7308373f": {
+      "29a2d6268946fd118dbcfab2a5ef104d3876b63a726bb1dff5573ced5c353d9c": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "f4a5b25f86725215a09966e2eb2ee79d0df67531e40221010dc8e608b19aa6b1": {
+      "5d1fec6485dd55383df20f8c9f6edb28bc91ef08ddfcb3709f1a0072a0b5d444": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "7b2f5f20bdc9177a86e7a43951c04e86327bbc5691c25d961f1863fb1d76c8a5": {
+      "6b6618d13011ea775d1267a96a9b0cc17da7c54971a9321b1393bd60934d223f": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "a8b73800e9a0708f5de2b80bbbd73a69728bb92de73fadc400e62f0ce11cd8c0": {
+      "c1851f9b6d61c2f4cd9a4df2c3f03f881a6d0d86328cd28f823aaf78fabd6eb1": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "f34aed74055478283f32205c9885216098e7be3c496d71231b97fed53d1b6810": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "56efd0225c2f8112738ba1f3d556800f6e4e3efd283b15b2c9dcda60454d38d7": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "cbac40e0dcd3ade61a7b2ca3685baf92c938d20dad3608262b865fd3100f11d8": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -212,16 +233,16 @@
         "files": {
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "5060567732b133179882d23a41bec02f0418b256"
+            "anchored_at": "124c43414b86911e94e83f8a1f71a57c2b3d31dc"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "5060567732b133179882d23a41bec02f0418b256"
+            "anchored_at": "124c43414b86911e94e83f8a1f71a57c2b3d31dc"
           }
         },
-        "anchored_at": "5060567732b133179882d23a41bec02f0418b256"
+        "anchored_at": "124c43414b86911e94e83f8a1f71a57c2b3d31dc"
       },
-      "7e1c0a630bae8871222bf0c14e8955f0b79ba2ab0d7659e651608635c59f5157": {
+      "2dc664ee43da173671bfaf5a6dde4e72730d886cf71e0bae69b6e20e4ac7a313": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -230,7 +251,7 @@
           "G7": "verified"
         }
       },
-      "57c357f971cd79d11447336a8a923234e03160a04f17d84a030d0164ec8295ae": {
+      "d2185857aafbb82b1adcc32d58a7615b8439a1089fed7b43f8568b6f5e151ddd": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -239,7 +260,7 @@
           "G7": "verified"
         }
       },
-      "51def5a71bdfed5fb3ad1696b883f06f7cf2149a8f83d41442ce7f651b87f325": {
+      "ace481c6061e894d15b89cd41a94b1cedbbba922c9f74fe831b91fa2e34447fe": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -247,7 +268,7 @@
           "G8": "verified"
         }
       },
-      "c7328af743437d78f551075493ff1a62d27f8f6669f63574103d62f34ae6626f": {
+      "61750343bd924082e753008d8644f8a587578ea478ada2aac9f2260210a0aa94": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -258,28 +279,28 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "5060567732b133179882d23a41bec02f0418b256"
+            "anchored_at": "124c43414b86911e94e83f8a1f71a57c2b3d31dc"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "5060567732b133179882d23a41bec02f0418b256"
+            "anchored_at": "124c43414b86911e94e83f8a1f71a57c2b3d31dc"
           }
         },
-        "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+        "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
       },
-      "0fcd4b9fdfd84bd8b1dce9fe03bff3d4138c23f8f0483ca9c6e5154fbf939a33": {
+      "ec64a69d1a49b117ec73059d1efac27d6b0923929fe317d763f9f7de3aa67e59": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -289,28 +310,28 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           }
         },
-        "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+        "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
       },
-      "2d00e9f5c995b418348bdc2fd1723daf224a4dece331cf8e1150b5996eca9925": {
+      "42e798dae6c7899f3e2d48c3267824861c6a667a9190918011ba3fa2af660a6f": {
         "label": "ephemeral",
         "checks": {
           "G1": "verified",
@@ -319,7 +340,7 @@
           "G7": "verified"
         }
       },
-      "6fb6e2efae0c8b77a0f71572714bfe92a85ad406bc8495fd31b378b72848db83": {
+      "ba319af1e0ffa193d066ca26381fad450ab3cb7c18634516e47fa513da2f23cc": {
         "label": "unanchored",
         "checks": {
           "G1": "verified",
@@ -327,21 +348,21 @@
           "G7": "verified"
         }
       },
-      "8d0328fedd83726bd1d2b5ef5594e166084a24c023b30bc788b2c4db8f90f8d1": {
+      "7757e051a80d5fb02d73c4ca85c36ac350ccb85877bea4ef63b79ab1a276f888": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "c8e436da3ea7d640e4b26bc41487b6f4a98b7e7b26b655a60c4e3478ad63f4f0": {
+      "4e455f7971afc2238fe6cc38c15308f2447bc51160352949ac66ff407fdc3f28": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "7979137033acc3417770e554f73ff8121d5b0f0205da18ca7d8f5ca3e0735fcf": {
+      "5129aa3eb93a72586bc49f9b7cab37cfbff0d370a0f59f505979c3787c46654b": {
         "label": "ephemeral",
         "checks": {
           "G1": "verified",
@@ -352,23 +373,23 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/tasks.md": {
             "label": "ephemeral",
@@ -376,14 +397,14 @@
           }
         }
       },
-      "58e4d4c7161460706a9fab6347ce006d55485016a0fa8788acb4391cbb5016de": {
+      "7aae8346e73a724ca051ee797dc34a091bc6809cc44c95f9cddfed10d0d6f1c6": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "864e32f6c18e788475a7ae09ce8eafa50fa9020df6d2e288fc3178682c44a67f": {
+      "b3b3045bc4c98a658006c6976aad0cc943c7e314ec70486e17cad19a510f7ed5": {
         "label": "ephemeral",
         "checks": {
           "G1": "verified",
@@ -393,23 +414,23 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/tasks.md": {
             "label": "ephemeral",
@@ -417,7 +438,7 @@
           }
         }
       },
-      "063adbee3b3852693414dfc487b55408450aa679db45e0be5eddb190cc506b68": {
+      "1dd3e0b02307f92d9700f3ce0211b0dcdae3d363b828d4f9da3a2799863f3d89": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -426,14 +447,14 @@
           "G7": "verified"
         }
       },
-      "607baac34825ca58ac16f84a6cd4b0c0e6958ac81cad0f89e23be295c824f774": {
+      "ea4f4ed01d77c1a50fba10832d3664b516600c850f7f2f87a612972a8b7f1edf": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "65de7eedfa6dce4b301fbf0aa6e2792b0e99a67c89c062b2f2ba4302d3abc97c": {
+      "04b2aaac52dac1e8ed15a8d1b44ba6fb52f63d4445d5bab3c947201c0f7ebd03": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -444,32 +465,32 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "18f4683d30615289b4ff0b7085394542713e566f"
+            "anchored_at": "0375e4c81c9da31f41a569f1f0bfae5292e364d8"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "a61c6f3a6b1aecb19b93f635b438141df1be767b"
+            "anchored_at": "f92b3717e9ee7f923f915dfe7d609d4d696781a0"
           }
         },
-        "anchored_at": "a61c6f3a6b1aecb19b93f635b438141df1be767b"
+        "anchored_at": "f92b3717e9ee7f923f915dfe7d609d4d696781a0"
       },
-      "7a7fad464199ffde12f00f6171333e8466c3bc0d4c57fcca254e674788e27b1d": {
+      "dc1f83c9159bd22e767b0422eec8b8d117eab8f7688089c8b2e615daae63ad50": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -477,7 +498,7 @@
           "G7": "verified"
         }
       },
-      "44da4bb12ae38f3a320c97b62f538e2e0fbd12be11a559ee1ebe3f3fbd028d2c": {
+      "f64fe71cf1cecfddfcd1b2033b52b14f4f89f0dd17873d4f49de22e9f04255f3": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -487,32 +508,32 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           }
         },
-        "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+        "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
       },
-      "894947dc84fcc1e643efcf6913fa64173ea8e0fd66d3b8201da1e721799eedba": {
+      "e6bed3a7065abecc9be8eb8b938e5afba52614f44a9bd7acd56e121d676aa8df": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -520,7 +541,7 @@
           "G7": "verified"
         }
       },
-      "16d458a9dc5449981aa510d01977ad83f604116553609bf4b88fb3514e731f4a": {
+      "b9aee66ef31bfe49dbb935a402e61911e525d1a6eb04edc9be4619dcd3776c32": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -530,32 +551,32 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+            "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
           }
         },
-        "anchored_at": "a206e6032714be5fe59264f58398dfdbb04a6095"
+        "anchored_at": "00a0739767f91bc1c2ac5da02ca6df588711a94b"
       },
-      "16bacad3bfa904365d66bef29c7914d052990d464db775c3e106739426124e4e": {
+      "6ef56acdb94692086d4d0ec189d9d5fecfc51fbb81d52f6fb4527522b926bdc2": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -564,7 +585,7 @@
           "G7": "verified"
         }
       },
-      "487aa83b64f02fc1df72c1be6e290445ac98ca7d108caee3ddcbfe8a3b96c841": {
+      "174db03b913fa152d1d1280d120b48d6094d7e4e52ce2e0dcc5191e447ca6b4d": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -573,7 +594,7 @@
           "G7": "verified"
         }
       },
-      "e4f894df4a168d2ed3d58ea8c14c3b758e585d821afd09e05d90fb96f6310820": {
+      "4a2e896311aa677cae5dfd15a90973bbf781fe507ab0d71f53f10667d4607712": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -582,7 +603,7 @@
           "G7": "verified"
         }
       },
-      "13117cad1e8bc73b80b7eef2e0f24b1db9c7d1de2e9361ad28ea9d0de30846b8": {
+      "1d8acf1c86d33ba7eb1fcfb3cce3ec0c824601f1b622746670a4e7ad32b794e5": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -590,21 +611,21 @@
           "G7": "verified"
         }
       },
-      "b771d884f42c5ab0b5b8f1cb54ac4f2dc0a01a8cdc799c1c9ff86ab44f5d2b82": {
+      "56efdb4ad0218becfe2db3361b5ef494b88bc5ffd0b0a09a05181d154010bae3": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "4c1a61e82b9f6aef000ee0b2aff6f40dc915afab64d8f864dd71ae9f3e3d0d54": {
+      "6f74065ea0e95d5f9061fa537654eb25f0a3d3b583cdb34bf6b1928d4532d5fd": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "ce6b8cd76b89ba70264b69bc8991f2155adbe8506169dd4cb412e8460567ac14": {
+      "f170d6cd8039d1d8fc881aa3b664abefe7b5aa0758b4b3b3df58d42684034969": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -614,32 +635,32 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+            "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+            "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+            "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+            "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+            "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+            "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
           }
         },
-        "anchored_at": "838ed39f0f46a6e3696e79e13d942b846eb48a49"
+        "anchored_at": "0267559a81f367ac1c1a2eeeb74274253344c5a1"
       },
-      "0771df85d60f22cd9770e3246261a7fd150347617d0e413565e3d9986e3c41b1": {
+      "aecbd612809bf42625bf70358f5f63ab483de499e91a97fdeedcc6c168f4846f": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -648,7 +669,7 @@
           "G7": "verified"
         }
       },
-      "734a73528bd603473ddee9ff219222c6c6b35eb743ef7a97ec2234f95fbbfbe7": {
+      "21a65e561667d86f065836081e157c1c53cf233f97d8dd9f53e768fa0da61426": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -657,7 +678,43 @@
           "G7": "verified"
         }
       },
-      "1c137cee2c760b6ff5fee10fd5ec017eb7b119d70502dcc29c7ec5c7fec7517f": {
+      "a91d249356dc91f3e545161448dbe32f4d3e4c900f81186ef73357df1e3cd7e2": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G4": "verified",
+          "G7": "verified"
+        }
+      },
+      "4ca1649b613c1e6a5f66fe83f139eee4996b99d06dc44ca0c81170c6488f0333": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "dab818e0ba8c6d76ca5edbd3b77d5273b628710619602a17484e2e5a99ce736c": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "0e710b433c5d1b21bfb8118894de70e85f271d5ee06097a397bdb2f960066291": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "429a5a953f7303a53f06eca5ecc06bc64ac1d2f47ca7c5daa8f34baf5d718c98": {
+        "label": "verified",
+        "checks": {
+          "G1": "verified",
+          "G7": "verified"
+        }
+      },
+      "0a422bf46d6ae53809071bc25e59acfb61d746e625601970fd536cc421dc22d0": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -665,7 +722,7 @@
           "G8": "verified"
         }
       },
-      "f291ed6904103b3a5ff0db2ad20c85ba30c3b31bff903064be9a9805660f0661": {
+      "64daf20fd07b9ea6ad18e33b27c7a449adc59bf3bd2bcf8d1140db9efb9624a5": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -676,56 +733,56 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "dbee21a0c17c009775733fa9a047b8baa261197c"
+            "anchored_at": "5067cddaec9788094c5051d22f0ff2805cc07cac"
           },
           "src/main/java/com/acme/orders/api/OrderController.java": {
             "label": "verified",
-            "anchored_at": "dbee21a0c17c009775733fa9a047b8baa261197c"
+            "anchored_at": "5067cddaec9788094c5051d22f0ff2805cc07cac"
           },
           "src/main/java/com/acme/orders/application/PlaceOrder.java": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "src/main/java/com/acme/orders/domain/Order.java": {
             "label": "verified",
-            "anchored_at": "dbee21a0c17c009775733fa9a047b8baa261197c"
+            "anchored_at": "5067cddaec9788094c5051d22f0ff2805cc07cac"
           },
           "src/main/java/com/acme/payments/api/PaymentsClient.java": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "src/main/java/com/acme/payments/internal/PaymentGateway.java": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           },
           "src/test/java/com/acme/orders/PlaceOrderTest.java": {
             "label": "verified",
-            "anchored_at": "b656c3534daf0ed99278f14bde043818b3520630"
+            "anchored_at": "64183743a054b237546acb05e9de8c3aeece2134"
           }
         },
-        "anchored_at": "dbee21a0c17c009775733fa9a047b8baa261197c"
+        "anchored_at": "5067cddaec9788094c5051d22f0ff2805cc07cac"
       },
-      "96a8f6ca184fbe6939e716aa79ff3b7eb7dfd6d6709328cecfed95a6810c89f6": {
+      "358ad08c9b50c5d553ceddd90975c4faf204a4d7b4eee5d29da9016a99ef3100": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -735,32 +792,32 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           }
         },
-        "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+        "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
       },
-      "860370ef0f1d1b918b45f7f65b87977a92bfa7b9587eb7b758841b145efaa646": {
+      "46524061c65bff1a432318f40b423e5813b98b2263940c14f0e0c9c9fc060cb0": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -770,32 +827,32 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           }
         },
-        "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+        "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
       },
-      "5faac57376f5bbb163a440c11b8ad328553d94dd516f73ea333040cbe6877182": {
+      "b166a381bfd78bf2677ad8cb4ff08da257437660a4971c4a514d5de62534f0a1": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -805,95 +862,95 @@
         "files": {
           "specs/001-place-order/contracts/orders.yaml": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/data-model.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/handover.yml": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/plan.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/spec.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           },
           "specs/001-place-order/tasks.md": {
             "label": "verified",
-            "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+            "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
           }
         },
-        "anchored_at": "3d1eaa3ad0999895556c22b5eff021d0124eeb28"
+        "anchored_at": "da500babba45fe2e65e4c13fda1e807e15200b78"
       },
-      "388bda2b2d9e58f49fbdd2acbcc04ae3132c401320a65bb0063c9360396d5c54": {
+      "d9a66f9cb327edcc57226bea4b98443fecdf58e0606bbfc308c9b8530dcb4dfe": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "c16aa66006661915c7f02376460d798a11e0d9d2d324eac0c2f165db5d3077ae": {
+      "a3f1c07799faa53ed5169027dc13f2d81d64cb40466736ec79dd21c3bd1c9389": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "98e5f17a7835a89eefb34681ce9c65d6824bdaa0ad6c16a596094c19b004deb2": {
+      "16c1175f85e3e97bba1dca0ea60f13ab0d2c20e2177bcde18e66b8b7ec1f82a7": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "4a588e8512f40f2d22aa4e17e93f866f6246404db41be54a1bdc7b28ccd7a147": {
+      "0babd2eafa347fbaa7285b793b2d09de3df327a7f78236ffee510b7b0007c8f4": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "3b7747bb36eba666f2155e38457d66ba38fe07ad34dcd109b1095e6b82ee1f6f": {
+      "6a8f786d20292741d5becbabe99e9332d656492a2769658cc4cd8f0dccc94e48": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "3c58c61ecbc06bec20acce3080302b6093be69cc468a3d32a9db25d268c2bf5a": {
+      "c8bb08001ee48f7dd566b45a623cb8ae0578f309cfc4ff41d84fb0f657d65b94": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "8f08c8b68893b8d45af6666d8737cba6728406f863059a634ecaa322d3476ba6": {
+      "f93c2b8521c0cde17a7a3211f4fd78e208d083b9f089e0e6adaa02c40849faad": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "fff7b6b1d0a57279baead2d4b44f649d90ce91e72cd5c3de8ff66b9d40e46ecf": {
+      "3ab85c6dfb44429606fcd0347ff7ef22fd711bbc3aa49d830b5945d97181d196": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "d6316c859ae2351eb592edc3adb5cca1bbbe70239641bbef3f25facbeb82c53e": {
+      "758eab5849347f9b56d7b3bd432cf0774b3a7fe4457ac8d43cb56d231caa17bd": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "d5d99f0622e8fc0e76098118971abd7322506c590d622461be0cfb0d38d1b3ed": {
+      "3a8a8148bd54c07cc103356876fd10d12b54da86b3fd64e71cf02cd1ebb32faf": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -903,12 +960,12 @@
         "files": {
           "specs/002-refunds/spec.md": {
             "label": "verified",
-            "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+            "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
           }
         },
-        "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+        "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
       },
-      "03a09de208cd610efb5b1e263c83000a50013dd034802fcd44e7be7e0f4e6baa": {
+      "363ddfb6956aca0b0d653c369efd53bf2fd0c3cba1a40252fb7c0425887289ba": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -918,12 +975,12 @@
         "files": {
           "specs/002-refunds/spec.md": {
             "label": "verified",
-            "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+            "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
           }
         },
-        "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+        "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
       },
-      "38b03669ed2b0b0ea096e564ed59e90b906cca902e7b8caf146fb6cb8d4643bf": {
+      "06c9cbfe322f8fda77c0e6cd31c01693114d4d651aa0ff0b4f80938fccf64eac": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -931,14 +988,14 @@
           "G8": "verified"
         }
       },
-      "7daf1b782e400421a5fa9e9cd9ea6b0fa18aada1f0fd4d9d497ce043a519d75a": {
+      "76b4530137aaf10a7c8b15bd78aea621559c42c881eb107d7b1a5b53c68dcf98": {
         "label": "verified",
         "checks": {
           "G1": "verified",
           "G7": "verified"
         }
       },
-      "06a565170e4e1a40b88a8700058e9cb59e138a4b18874f573c560f205e92f496": {
+      "638bdc8e5c4daf6db6027b2cec8ab8b41a275e38fd085559a461d54b7d20ca97": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -948,20 +1005,20 @@
         "files": {
           "specs/002-refunds/data-model.md": {
             "label": "verified",
-            "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+            "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
           },
           "specs/002-refunds/plan.md": {
             "label": "verified",
-            "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+            "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
           },
           "specs/002-refunds/spec.md": {
             "label": "verified",
-            "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+            "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
           }
         },
-        "anchored_at": "9fcf1931531b6ff0e0103c624b3ed61d932cb3ee"
+        "anchored_at": "f3827d50206903eaaece740c920d4d255317101f"
       },
-      "f73ef54ae12b6e2dedd78f761fb99840c6eff60c073c50832bb9a6c68835dbb4": {
+      "06bc3058c7c799f7dcee1c72f18d4eb7ea2768206525f3ee990476f9c58b8f54": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -969,7 +1026,7 @@
           "G7": "verified"
         }
       },
-      "be478b7609a58b60fdd8034cf803cf5436e127856e5e16f98b9fdcb0436b6d7e": {
+      "3b39c01f4924b0d40833bcee834e54f7c7dea92183ae1ad60f8a840a583fc7ab": {
         "label": "verified",
         "checks": {
           "G1": "verified",
@@ -981,7 +1038,7 @@
       {
         "check": "G2",
         "label": "ephemeral",
-        "event": "7979137033ac",
+        "event": "5129aa3eb93a",
         "where": "S-2026-21/001-place-order #12",
         "paths": [
           "specs/001-place-order/tasks.md"
@@ -991,7 +1048,7 @@
       {
         "check": "G2",
         "label": "ephemeral",
-        "event": "864e32f6c18e",
+        "event": "b3b3045bc4c9",
         "where": "S-2026-21/001-place-order #14",
         "paths": [
           "specs/001-place-order/tasks.md"

@@ -1,12 +1,12 @@
 {
   "tool": "archiguard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "command": "speckit.implement",
   "step": "a",
   "run": "step",
   "mode": "enforce",
   "feature": "specs/001-place-order",
-  "commit": "838ed39f0f46a6e3696e79e13d942b846eb48a49",
+  "commit": "0267559a81f367ac1c1a2eeeb74274253344c5a1",
   "dirty": true,
   "artefacts": {
     "spec.md": "803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e",
@@ -18,7 +18,7 @@
   },
   "pins": {
     "rulebook": "acme-standards@v2026.10.1",
-    "lock": "sha256:b9afb89e07088d950d48aa197ba10ecfb0597a91024290bb93acee325863eff2",
+    "lock": "sha256:999b10511cce4ddd5d61ab8a8d0f3f82555312fc126a3ed4585b48e9b8a38bd7",
     "domain_map": "1.4.0",
     "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
   },

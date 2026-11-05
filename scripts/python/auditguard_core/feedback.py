@@ -18,7 +18,7 @@ VERDICTS = ("accept", "reject", "defer")
 STATUSES = ("new", "deferred", "accepted", "in-backlog", "rejected", "resolved")
 OPEN_STATUSES = ("new", "deferred")
 IMPACT_ORDER = {"high": 0, "medium": 1, "low": 2}
-KIND_ORDER = ("new-unit", "unmapped-code", "domain-change", "cross-context", "topology", "vocabulary", "map-gap")
+KIND_ORDER = ("unmapped-code", "cross-context", "new-unit", "topology", "vocabulary", "domain-change", "map-gap")   # as archiGuard
 # the item fields an event carries (besides id, fingerprint and the file context)
 ITEM_FIELDS = ("kind", "subject", "title", "observation", "suggestion", "impact", "for", "target", "waiver")
 COMPARED_FIELDS = ITEM_FIELDS + ("occurrences",)

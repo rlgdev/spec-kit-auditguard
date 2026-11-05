@@ -206,7 +206,8 @@ the hash of the event before it, so deleting a sprint folder breaks the chain ju
 [`examples/orders`](examples/orders) is a project taken through two sprints with the real scopeGuard and archiGuard
 engines: a plan repaired twice, a tasks gate that escalated and the lead architect's decision, an approved ledger
 waiver, the tech lead's sign-off, a sealed and anchored sprint, a fitness repair, a plan edited by hand after the
-sign-off, a second feature with a deferral, a workflow gate and the PR approval. Open
+sign-off, the loop feedback archiGuard wrote after coding and its triage (one item into the backlog, one deferred,
+`audit/backlog-S-2026-22.csv`), a second feature with a deferral, a workflow gate and the PR approval. Open
 `examples/orders/audit/viewer/index.html` in a browser, or read `examples/orders/audit/index.md`.
 
 ## Verification against the golden sources
@@ -280,10 +281,10 @@ rule `rules.feedback_triaged_before_close` warns (record) or fails (enforce) a s
 
 ```bash
 bash $A backlog --status new                                          # what waits for a triage (Markdown, one table per addressee)
-bash $A decide feedback:LF-2a2a5a3d accept --by "Lead architect" --reason "notifications becomes a context in DMD 1.5.0"
-bash $A decide feedback:LF-121a1954 reject --by "Orders domain owner" --reason "UI term, renamed in the next spec"
+bash $A decide feedback:LF-2ba4e67d accept --by "Lead architect" --reason "declare the deployable of orders in DMD 1.5.0"
+bash $A decide feedback:LF-831ba84c defer --by "Orders domain owner" --reason "Shipment: decide with the fulfilment team"
 bash $A backlog --status accepted --format csv --out backlog.csv      # import into the tracker
-bash $A decide feedback:LF-2a2a5a3d accept --ref ARCH-77 --by "Lead architect"
+bash $A decide feedback:LF-2ba4e67d accept --ref ARCH-77 --by "Lead architect"
 ```
 
 The specification is archiGuard's
