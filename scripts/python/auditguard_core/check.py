@@ -18,6 +18,7 @@ RULE_TEXT = {
     "commands_closed_before_close": "every started command finished or was closed",
     "no_unassigned_events": "every event belongs to a sprint",
     "anchored_before_export": "a sprint is anchored in git before it is exported",
+    "feedback_triaged_before_close": "every loop-feedback item is triaged (decide feedback:<id>) before the sprint closes",
 }
 
 
@@ -126,6 +127,19 @@ def evaluate_rules(root: Path, cfg: Any, *, sprint: Optional[str] = None, featur
                 n = len(store.read_journal(path)[0])
                 items.append(f"{key}: {n} event(s)")
     add("no_unassigned_events", items, "every event belongs to a sprint", f"events in {UNASSIGNED}")
+
+    # loop-feedback items nobody triaged (opt-in: the feedback is evidence, never a gate)
+    if enabled.get("feedback_triaged_before_close", False) and (rules is None or "feedback_triaged_before_close" in rules):
+        from . import feedback as fb
+        all_chains = {k: store.load_chain(k) for k in store.chain_keys()}
+        items = []
+        for rec in sorted(fb.items(all_chains).values(), key=fb.sort_key):
+            if rec["status"] != "new" or not fb.in_sprint(rec, sprint):
+                continue
+            if feature_arg and not any(Path(str(f)).name in keys for f in rec.get("features") or []):
+                continue
+            items.append(f"{rec['id']} ({rec.get('kind')} {rec.get('subject')})")
+        add("feedback_triaged_before_close", items, "every loop-feedback item is triaged", "loop-feedback items not triaged")
     return results
 
 

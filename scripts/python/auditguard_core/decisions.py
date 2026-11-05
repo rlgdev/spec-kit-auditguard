@@ -21,6 +21,7 @@ SUBJECT_VERDICTS = {
     "spec-change": ("accept", "reject"),
     "escalation": ("accept", "reject", "defer"),
     "gate": ("approve", "reject"),
+    "feedback": ("accept", "reject", "defer"),
 }
 MILESTONE_OF = {("design", "approve"): "design.signed", ("design", "reject"): "design.reopened",
                 ("implement", "approve"): "implement.approved", ("pr", "approve"): "pr.approved"}
@@ -43,20 +44,27 @@ def open_escalations(chain: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def decide(root: Path, cfg: Any, subject: str, verdict: str, by: Optional[str], role: Optional[str],
-           reason: Optional[str], feature_arg: Optional[str]) -> Tuple[Dict[str, Any], List[str]]:
+           reason: Optional[str], feature_arg: Optional[str],
+           tracker_ref: Optional[str] = None) -> Tuple[Dict[str, Any], List[str]]:
     refuse_agent_context("decide")
     notes: List[str] = []
     base, _, ref = subject.partition(":")
     if base not in SUBJECT_VERDICTS:
         raise AuditGuardError(f"unknown subject '{subject}' - use design, implement, pr, spec-change, "
-                              "escalation:<note or id>, gate:<step-id>")
+                              "escalation:<note or id>, gate:<step-id>, feedback:<LF-id>")
     verdict = verdict.lower()
     if verdict not in SUBJECT_VERDICTS[base]:
         raise AuditGuardError(f"'{verdict}' is not a verdict for {base}: use {' | '.join(SUBJECT_VERDICTS[base])}")
-    if base in ("escalation", "gate") and not ref:
-        raise AuditGuardError(f"name the {base}: {base}:<{'escalation note path or event id' if base == 'escalation' else 'workflow step id'}>")
+    if base in ("escalation", "gate", "feedback") and not ref:
+        what = {"escalation": "escalation note path or event id", "gate": "workflow step id",
+                "feedback": "loop-feedback item id, e.g. LF-2a2a5a3d"}[base]
+        raise AuditGuardError(f"name the {base}: {base}:<{what}>")
+    if tracker_ref and base != "feedback":
+        raise AuditGuardError("--ref (the tracker key) belongs to a loop-feedback decision: decide feedback:<id> accept --ref <key>")
     if not by and not os.environ.get("AUDITGUARD_ACTOR"):
         raise AuditGuardError("--by <name> is required: a decision names the person who took it")
+    if base == "feedback":
+        return decide_feedback(root, cfg, ref, verdict, by, role, reason, feature_arg, tracker_ref), notes
     rc = RunContext(root, cfg)
     rec = Recorder(rc)
     feature_dir = resolve_feature_dir(root, feature_arg, required=base != "gate")
@@ -110,6 +118,47 @@ def decide(root: Path, cfg: Any, subject: str, verdict: str, by: Optional[str], 
                              "data": {k: v for k, v in mdata.items() if v is not None}})
     save_baseline(rc)
     return ev, notes
+
+
+def decide_feedback(root: Path, cfg: Any, fid: str, verdict: str, by: Optional[str], role: Optional[str],
+                    reason: Optional[str], feature_arg: Optional[str], tracker_ref: Optional[str]) -> Dict[str, Any]:
+    """Triage of a loop-feedback item (FR-501): recorded in the project chain - the domain master design is
+    project-level - or in the feature's chain with --feature-dir."""
+    from . import feedback as fb
+    from .common import feature_dirs
+
+    if verdict in ("reject", "defer") and not (reason or "").strip():
+        raise AuditGuardError(f"--reason is required to {verdict} a loop-feedback item")
+    rc = RunContext(root, cfg)
+    rec = Recorder(rc)
+    feature_dir = resolve_feature_dir(root, feature_arg, required=True) if feature_arg else None
+    targets = [feature_dir] if feature_dir is not None else \
+        [d for d in feature_dirs(root) if (d / "gates" / fb.FILE_NAME).is_file()]
+    for fd in targets:
+        run_collectors(rec, fd)
+    store = rc.store
+    chains = {k: store.load_chain(k, refresh=True) for k in store.chain_keys()}
+    records = fb.items(chains)
+    match = records.get(fid) or next((r for i, r in records.items() if i.lower() == fid.lower()), None)
+    if match is None:
+        raise AuditGuardError(f"no loop-feedback item {fid} in the trail (auditguard backlog --status all lists them)")
+    feature = rec.feature_path(feature_dir)
+    if feature is not None and key_of(feature) not in [key_of(f) for f in match["features"]]:
+        raise AuditGuardError(f"{match['id']} was not raised in {feature} (raised in: {', '.join(match['features'])})")
+    actor = rc.actor_human(by, role)
+    data: Dict[str, Any] = {"subject": f"feedback:{match['id']}", "verdict": verdict, "by": actor["id"]}
+    if role:
+        data["role"] = role
+    if reason:
+        data["reason"] = reason
+    if tracker_ref:
+        data["ref"] = tracker_ref
+    data["item"] = {k: match.get(k) for k in ("id", "kind", "subject", "title", "suggestion", "impact", "target", "for")}
+    data["features"] = list(match["features"])
+    data["status_before"] = match["status"]
+    ev = rec.record(feature, {"kind": "decision", "actor": actor, "source": "cli", "data": data})
+    save_baseline(rc)
+    return ev
 
 
 def note(root: Path, cfg: Any, text: str, by: Optional[str], feature_arg: Optional[str]) -> Dict[str, Any]:
@@ -196,7 +245,11 @@ def sprint_close(root: Path, cfg: Any, sprint_id: Optional[str], by: Optional[st
     rec.record(None, {"kind": "sprint.closed", "actor": actor, "source": "cli",
                       "data": {"id": sid, "name": entry.get("name"), "start": entry.get("start"), "end": entry.get("end"),
                                "goal": entry.get("goal"), "warnings": warnings}}, sprint=sid)
-    seal = build_seal(rc.store, sid, actor["id"], warnings)
+    from . import feedback as fb
+    store = rc.store
+    chains = {k: store.load_chain(k, refresh=True) for k in store.chain_keys()}
+    fb_counts = fb.counts(r for r in fb.items(chains).values() if fb.in_sprint(r, sid))
+    seal = build_seal(rc.store, sid, actor["id"], warnings, feedback=fb_counts)
     write_json(rc.store.sprints_dir / sid / "seal.json", seal)
     reg = rc.store.register.__class__.load(cfg.register_path)
     entry = reg.get(sid) or entry
@@ -206,7 +259,8 @@ def sprint_close(root: Path, cfg: Any, sprint_id: Optional[str], by: Optional[st
     return seal
 
 
-def build_seal(store: Any, sprint: str, by: str, warnings: List[Dict[str, Any]], at: Optional[str] = None) -> Dict[str, Any]:
+def build_seal(store: Any, sprint: str, by: str, warnings: List[Dict[str, Any]], at: Optional[str] = None,
+               feedback: Optional[Dict[str, int]] = None) -> Dict[str, Any]:
     folder = store.sprints_dir / sprint
     journals: Dict[str, Dict[str, Any]] = {}
     hashes: List[str] = []
@@ -226,6 +280,8 @@ def build_seal(store: Any, sprint: str, by: str, warnings: List[Dict[str, Any]],
     seal: Dict[str, Any] = {"v": 1, "sprint": sprint, "closed_by": by, "at": at or now_iso(), "journals": journals,
                             "evidence": {"count": len(hashes), "sha256_of_sorted_hashes": sha256_json(sorted(hashes))},
                             "warnings": warnings}
+    if feedback is not None:
+        seal["feedback"] = feedback      # the triage state of the sprint's loop-feedback items, inside the hash
     seal["hash"] = sha256_json(seal)
     return seal
 

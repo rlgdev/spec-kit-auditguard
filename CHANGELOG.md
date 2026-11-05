@@ -6,6 +6,35 @@ All notable changes to auditGuard are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-05
+
+The loop feedback: archiGuard 0.2 reports, after coding, what a feature did that the domain master design does not
+describe (code no context maps, a new build unit, an undeclared topology, a dependency only a waiver lets through, ...),
+each item with a short suggestion for the next iteration. auditGuard records it as evidence and hands it over as
+backlog candidates. Nothing of it can block a command
+([README: Loop feedback](README.md#loop-feedback-from-the-trail-to-the-backlog);
+[specification](https://github.com/rlgdev/spec-kit-archiguard/blob/main/docs/loop-feedback-specification.md)).
+
+### Added
+
+- **Loop-feedback collector**: the archiGuard collector reads `gates/loop-feedback.json` and records `report.saved`
+  with the snapshot, then `feedback.raised`, `feedback.updated` (with `changed_fields`) and `feedback.resolved` per
+  item. An unchanged file records nothing; a `not-evaluated` file raises and resolves nothing; a `partial` one resolves
+  only what it lists. An item decided before carries `known`. Switch: `collectors.archiguard.feedback` (default on).
+- **Triage**: `auditguard decide feedback:<id> accept | reject | defer --by NAME [--reason T] [--ref KEY]`
+  (`--reason` required for `reject` and `defer`; `--ref` links the tracker key), recorded in the project chain or,
+  with `--feature-dir`, in the feature's chain. The status of an item (`new`, `deferred`, `accepted`, `in-backlog`,
+  `rejected`, `resolved`) is derived from the chains; `new` and `deferred` items are open items.
+- **`auditguard backlog`** (and `/speckit.auditguard.backlog`): the items as backlog candidates, merged across
+  features - Markdown (one table per addressee), CSV with the columns a tracker imports (`External ID, Summary,
+  Description, Priority, Labels, Status, Ref, Features, First sprint, Evidence`) or JSON; `--sprint`, `--status`,
+  `--out`. Read-only. `backlog.priority` and `backlog.labels` shape the CSV.
+- **Views**: a loop-feedback section in `trail.md`, `sprint.md` and `features/<feature>.md` (once any feedback is
+  recorded), `audit/sprints/<S>/loop-feedback.md`, the `feedback` filter and the pending triage in the viewer.
+- **Seal**: `seal.json` counts the sprint's items by status (`feedback`, inside the hash).
+- **Rule** `feedback_triaged_before_close` (off by default; `[WARN]` in record, `[FAIL]` in enforce).
+- `configure` shows whether the loop feedback is recorded; its JSON has `feedback_recorded`.
+
 ## [0.2.0] - 2026-10-09
 
 The first field run showed `/speckit.plan` taking far longer with auditGuard than without. The cause was not the

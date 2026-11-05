@@ -38,11 +38,14 @@ BOM (binary files unchanged), so a Windows checkout and git agree - the same has
 | `command.finished`, `command.abandoned` | `duration_s, started_at, started_event, gates[], waiver_changes, started_missing?, outcome_file?, reason?` |
 | `stage.entered`, `stage.reentered`, `stage.completed` | `stage, by_command / by_event / by_kind / by / after_stage, completed_at?` |
 | `gate.verdict` | scopeGuard: `tool, gate, status, coverage, coverage_pct, pass, violations, waived, iterations, open_items, fingerprint`; archiGuard: `tool, step, command, status, blocking, advisory, waived, iterations, max_iterations, history[], checks[], escalation, pins, fingerprint` |
-| `report.saved` | `tool, name, fingerprint` (architecture-compliance.md, analyze-report.md, scopeguard-report.md) |
+| `report.saved` | `tool, name, fingerprint` (architecture-compliance.md, analyze-report.md, scopeguard-report.md, loop-feedback.json); for `loop-feedback.json` also `status, reason?, computed_by, computed_commit, answer, items, summary` |
+| `feedback.raised` | an item of archiGuard's loop feedback, new in the feature's chain: `id, kind, subject, title, observation, suggestion, impact, for[], target, waiver, occurrences` (the count), `first_seen, fingerprint` (of the item without `first_seen`), `map_version, home_context, computed_by, computed_commit, file_fingerprint, source_file`, `known?` (`{verdict, ref, at, sprint}`: the item was decided before) |
+| `feedback.updated` | the same fields when an open item changed, plus `changed_fields[]` |
+| `feedback.resolved` | `id, kind, subject, raised_event, computed_by, computed_commit, file_fingerprint, source_file` - the item is no longer raised |
 | `escalation.raised`, `escalation.withdrawn` | `tool, note, note_sha256, gate, items[], todo` |
 | `escalation.decided` | `subject, verdict (accept \| reject \| defer), by, role, reason, note, raised_event` |
 | `waiver.added`, `.changed`, `.approved`, `.revoked`, `.superseded`, `.expired`, `.removed` | `id, source (scope \| conformance \| ledger), item / rule(s), reason, owner, approver, expires, status, record, before / after, changed_fields, ledger_line?` |
-| `decision` | `subject (design, implement, pr, spec-change, escalation:…, gate:<step>, ledger:<id>), verdict, by, role, reason, …` |
+| `decision` | `subject (design, implement, pr, spec-change, escalation:…, gate:<step>, ledger:<id>, feedback:<id>), verdict, by, role, reason, …`; for `feedback:<id>` also `ref?` (the tracker key), `item` (snapshot), `features[]`, `status_before` |
 | `design.signed`, `design.reopened`, `handover.4-5`, `test.exit`, `implement.approved`, `pr.approved` | milestones: `by, role, reason, hashes?, pins?, fingerprint?` |
 | `artefact.changed` | `files, after_signoff, after_handover, inferred_command, authors{path: "name (sha)"}` (the changes are top-level) |
 | `commit.merged` | `commit, author, date, subject, pr, base, files[]` |

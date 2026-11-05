@@ -48,7 +48,8 @@ exactly that and prints the command that reproduces every finding.
 | **Stages** | each command belongs to a stage (data in the config); `stage.entered`, `stage.completed` (by a milestone: the design sign-off, the implement approval, the PR approval) and `stage.reentered` when work goes back |
 | **Gate reports** | collectors read what scopeGuard and archiGuard wrote (step verdicts with their iteration history, scopeGuard's coverage report, escalation notes) and keep content-addressed snapshots as evidence |
 | **Waiver history** | scope deferrals (`## Scope Coverage`), architecture deviations (`## Architecture Conformance`) and archiGuard's decision ledger: `waiver.added`, `changed`, `approved`, `revoked`, `expired`, `removed` |
-| **Human decisions** | archiGuard sign-off and re-open, Spec Kit workflow gate verdicts, ledger ADR status, and `auditguard decide` (escalation answers, design / implement / PR approval, spec changes) - with the person, role and reason |
+| **Human decisions** | archiGuard sign-off and re-open, Spec Kit workflow gate verdicts, ledger ADR status, and `auditguard decide` (escalation answers, design / implement / PR approval, spec changes, loop-feedback triage) - with the person, role and reason |
+| **Loop feedback** | archiGuard's `gates/loop-feedback.json` (what the implementation did that the domain master design does not describe): `feedback.raised`, `feedback.updated`, `feedback.resolved` per item, triaged by a person and handed over as backlog candidates ([Loop feedback](#loop-feedback-from-the-trail-to-the-backlog)) |
 | **Changes outside commands** | at every hook the artefact and code hashes are compared with the last record: a hand edit of a signed plan, a command run with hooks skipped, becomes `artefact.changed` with its author |
 | **Sessions** (`full`) | the agent's `session_start` / `session_end` events; every agent event carries the session id |
 
@@ -64,7 +65,7 @@ on `PATH`, the launchers use the Python that ships with `specify-cli`, or `uv`.
 
 ```bash
 # 1. the extension: the recorder, its hooks and agent events, the config file
-specify extension add auditguard --from https://github.com/rlgdev/spec-kit-auditguard/releases/download/v0.2.0/auditguard.zip
+specify extension add auditguard --from https://github.com/rlgdev/spec-kit-auditguard/releases/download/v0.3.0/auditguard.zip
 
 # 2. apply the config: hooks on, the agent events of the profile, the sprint register, .gitattributes for the chain
 bash .specify/extensions/auditguard/scripts/bash/auditguard.sh configure
@@ -133,7 +134,7 @@ wired:
 
 ```text
 $ auditguard configure
-auditGuard 0.2.0 | configure
+auditGuard 0.3.0 | configure
 config: .specify/extensions/auditguard/auditguard-config.yml
 
   profile       : light  (records the commands; nothing else runs in the agent's loop)
@@ -179,6 +180,7 @@ audit/
   sprints/S-2026-21/
     seal.json                         written when the sprint was closed
     sprint.md                         everything that happened in the sprint
+    loop-feedback.md                  the sprint's loop-feedback items with their triage status (when there are any)
     _project/journal.jsonl            project events: sprints, sessions, notes, constitution
     001-place-order/journal.jsonl     THE record: one hash-chained JSON event per line
     001-place-order/trail.md          the view, by stage
@@ -211,7 +213,7 @@ sign-off, a second feature with a deferral, a workflow gate and the PR approval.
 
 ```text
 $ auditguard verify --golden
-auditGuard 0.2.0 | verify --golden | journals 5 · events 66 · evidence 74
+auditGuard 0.3.0 | verify --golden | journals 5 · events 66 · evidence 74
 internal : PASS   3 chain(s) intact · 1 seal(s) match · 74 evidence hash(es) match · register consistent
 golden   : PASS   git ok · handover ok · lock ok · ledger ok · workflow ok · tracker not configured
   G1 commits reachable      66 verified
@@ -255,6 +257,38 @@ bash $A sprint open S-2026-22 --name "Sprint 22" --start 2026-10-20 --end 2026-1
 Events while no sprint is open go to `_unassigned` (`check` reports it). After a seal, nothing is appended to the
 sealed folder: a late event goes to the open sprint with `redirected_from`.
 
+## Loop feedback: from the trail to the backlog
+
+After coding, archiGuard (0.2+) compares what a feature did with the domain master design and writes
+`specs/<feature>/gates/loop-feedback.json`: code no context maps, a new build unit (a new service?), a topology the
+map does not declare, a dependency only a waiver lets through, terms outside the glossary - each item with a short
+suggestion for the next iteration and the person it is for. It is evidence, never a gate. auditGuard records it and
+hands it over:
+
+| When | What auditGuard does |
+|------|----------------------|
+| any hook or `collect` after archiGuard wrote the file | `report.saved` with the snapshot, then `feedback.raised` per new item, `feedback.updated` when an item changed, `feedback.resolved` when an evaluated file no longer has it; an unchanged file records nothing |
+| sprint review / architecture board | a person triages each item: `auditguard decide feedback:<id> accept \| reject \| defer --by NAME --reason T` - recorded in the project chain (the domain master design is project-level; `--feature-dir` puts it in one feature's chain) |
+| hand-over to the tracker | `auditguard backlog --status accepted --format csv --out backlog.csv` - one row per item, merged across features, with the columns a tracker imports; `decide feedback:<id> accept --ref ARCH-77` links the tracker key |
+| `sprint close` | the triage counts go into `seal.json` (`feedback`, inside the hash) and `audit/sprints/<S>/loop-feedback.md` lists the sprint's items |
+
+An item's status is `new`, `deferred`, `accepted`, `in-backlog` (accepted with a tracker key), `rejected` or
+`resolved` (no feature raises it any more). The id comes from what the item is about, never from the feature, so the
+same gap found by two features is one backlog row; a decision taken once is shown as `known` when the next feature
+raises the item again. `new` and `deferred` items are open items (`n loop-feedback item(s) untriaged`); the opt-in
+rule `rules.feedback_triaged_before_close` warns (record) or fails (enforce) a sprint close with untriaged items.
+
+```bash
+bash $A backlog --status new                                          # what waits for a triage (Markdown, one table per addressee)
+bash $A decide feedback:LF-2a2a5a3d accept --by "Lead architect" --reason "notifications becomes a context in DMD 1.5.0"
+bash $A decide feedback:LF-121a1954 reject --by "Orders domain owner" --reason "UI term, renamed in the next spec"
+bash $A backlog --status accepted --format csv --out backlog.csv      # import into the tracker
+bash $A decide feedback:LF-2a2a5a3d accept --ref ARCH-77 --by "Lead architect"
+```
+
+The specification is archiGuard's
+[docs/loop-feedback-specification.md](https://github.com/rlgdev/spec-kit-archiguard/blob/main/docs/loop-feedback-specification.md).
+
 ## The viewer
 
 `auditguard render --html` writes `audit/viewer/index.html` (one static file, no network, no fonts to download) and
@@ -276,6 +310,7 @@ a journal changes.
 |---------|--------------|
 | `/speckit.auditguard.trail` | the current feature's trail and open items |
 | `/speckit.auditguard.collect` | collect new evidence now (no Spec Kit command needed) |
+| `/speckit.auditguard.backlog` | the loop-feedback items as backlog candidates, with their triage status (read-only) |
 | `/speckit.auditguard.verify` | verify the trail internally and against the golden sources |
 | `/speckit.auditguard.configure` | apply the config and show what is in force |
 | `/speckit.auditguard.<cmd>entry` / `<cmd>exit` | the 20 hook commands (generated; not for direct use) |
@@ -287,7 +322,7 @@ launchers):
 ```text
 auditguard hook <before_X|after_X|stop|session_start|session_end> [--feature-dir D] [--via hooks|workflow]
 auditguard collect [--feature-dir D | --all]
-auditguard decide <design|implement|pr|spec-change|escalation:<note>|gate:<step>> <approve|reject|accept|defer> --by NAME [--role R] [--reason T] [--feature-dir D]
+auditguard decide <design|implement|pr|spec-change|escalation:<note>|gate:<step>|feedback:<LF-id>> <approve|reject|accept|defer> --by NAME [--role R] [--reason T] [--ref KEY] [--feature-dir D]
 auditguard note "<text>" --by NAME [--feature-dir D]
 auditguard sprint list | current | open <id> [--name --start --end --goal] [--close-current] --by NAME | close [<id>] --by NAME
 auditguard anchor [--sprint S] [--push] [--by NAME]
@@ -295,6 +330,7 @@ auditguard render [--html] [--sprint S] [--feature-dir D | --all]
 auditguard show [--feature-dir D | --all] [--sprint S] [--stage X] [--kind K] [--actor A] [--open] [--json]
 auditguard verify [--sprint S | --all] [--golden] [--recompute] [--offline] [--pack FILE] [--record] [--no-render] [--json] [--out FILE]
 auditguard check [--feature-dir D] [--sprint S] [--json]
+auditguard backlog [--sprint S | --all] [--status new,deferred,accepted,in-backlog,rejected,resolved|all] [--format md|csv|json] [--out FILE]
 auditguard export --sprint S [--out FILE]
 auditguard serve [--port 8765] [--open]
 auditguard configure [--dry-run]
@@ -336,7 +372,7 @@ CI ignores them.
 - uses: actions/checkout@v5
   with: { fetch-depth: 0 }                 # the golden checks read the history
 - run: git fetch origin "refs/notes/*:refs/notes/*" "refs/tags/*:refs/tags/*"
-- uses: rlgdev/spec-kit-auditguard@v0.2.0
+- uses: rlgdev/spec-kit-auditguard@v0.3.0
   with:
     command: verify                        # verify | check | render | anchor
     golden: "true"
