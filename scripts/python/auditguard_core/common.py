@@ -140,6 +140,17 @@ def write_text(path: Path, text: str) -> None:
     os.replace(tmp, path)
 
 
+def line_ending(path: Path) -> str:
+    """The line ending most lines of an existing file use (CRLF or LF; LF on a tie). A rewrite of a file another tool
+    owns (Spec Kit writes .specify/extensions.yml with the platform's ending) keeps it, so git shows only the edited
+    lines. Never used for the audit trail, which is LF byte for byte."""
+    try:
+        data = path.read_bytes()
+        return "\r\n" if 2 * data.count(b"\r\n") > data.count(b"\n") else "\n"
+    except OSError:
+        return "\n"
+
+
 def write_bytes(path: Path, data: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f".{path.name}.tmp")
