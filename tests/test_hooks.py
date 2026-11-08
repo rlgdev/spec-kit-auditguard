@@ -33,13 +33,15 @@ def test_command_records_artefacts_and_changes(opened):
     opened.hook("before_plan")
     opened.write(f"{f}/plan.md", "# Plan\n")
     opened.write(f"{f}/contracts/api.yaml", "openapi: 3.0.0\n")
+    opened.write(f"{f}/scopeguard-stamp.json", '{"tool": "scopeguard"}\n')   # scopeGuard 0.5: the scope stamp of step A
     opened.write("src/new.py", "x = 1\n")
     out = opened.hook("after_plan").stdout
     assert "command.finished (pass)" in out
     fin = [e for e in opened.events() if e["kind"] == "command.finished"][0]
     changed = {c["path"] for c in fin["changed"]}
-    assert {f"{f}/plan.md", f"{f}/contracts/api.yaml", "src/new.py"} <= changed
+    assert {f"{f}/plan.md", f"{f}/contracts/api.yaml", f"{f}/scopeguard-stamp.json", "src/new.py"} <= changed
     assert f"{f}/spec.md" in fin["artefacts"] and f"{f}/spec.md" not in changed
+    assert f"{f}/scopeguard-stamp.json" in fin["artefacts"]
     assert fin["actor"] == {"type": "agent", "id": "claude"}
     assert fin["stage"] == "design"
 

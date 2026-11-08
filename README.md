@@ -49,7 +49,7 @@ exactly that and prints the command that reproduces every finding.
 | **Gate reports** | collectors read what scopeGuard and archiGuard wrote (step verdicts with their iteration history, scopeGuard's coverage report, escalation notes) and keep content-addressed snapshots as evidence |
 | **Waiver history** | scope deferrals (`## Scope Coverage`), architecture deviations (`## Architecture Conformance`) and archiGuard's decision ledger: `waiver.added`, `changed`, `approved`, `revoked`, `expired`, `removed` |
 | **Human decisions** | archiGuard sign-off and re-open, Spec Kit workflow gate verdicts, ledger ADR status, and `auditguard decide` (escalation answers, design / implement / PR approval, spec changes) - with the person, role and reason |
-| **Changes outside commands** | at every hook the artefact and code hashes are compared with the last record: a hand edit of a signed plan, a command run with hooks skipped, becomes `artefact.changed` with its author |
+| **Changes outside commands** | at every hook the artefact and code hashes are compared with the last record: a hand edit of a signed plan, a re-stamp of the scope (`scopeguard-stamp.json`, scopeGuard 0.5) outside a command, a command run with hooks skipped, becomes `artefact.changed` with its author |
 | **Sessions** (`full`) | the agent's `session_start` / `session_end` events; every agent event carries the session id |
 
 The agent cannot write the trail: in the `full` profile a `pre_tool_use` guard blocks agent edits under `audit/` and
