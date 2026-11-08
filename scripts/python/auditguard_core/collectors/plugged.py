@@ -13,7 +13,8 @@ from ..common import read_bytes, rel_path
 from .base import Emit, last
 
 CORE_KINDS = {"decision", "note", "gate.verdict", "escalation.raised", "escalation.decided", "pr.approved",
-              "implement.approved", "commit.merged", "report.saved"}
+              "implement.approved", "commit.merged", "report.saved", "feedback.raised", "feedback.updated",
+              "feedback.resolved"}
 
 
 def _argv(command: str, root: Path) -> List[str]:

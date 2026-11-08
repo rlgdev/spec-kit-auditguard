@@ -1,4 +1,5 @@
-"""archiGuard collector: combined verdicts, escalation notes, design sign-off / re-open, handover 4->5, test loop."""
+"""archiGuard collector: combined verdicts, escalation notes, design sign-off / re-open, handover 4->5, test loop,
+and the loop feedback to the domain master design (gates/loop-feedback.json)."""
 
 from __future__ import annotations
 
@@ -6,11 +7,12 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..common import content_hash, read_bytes, read_text, rel_path
+from .. import feedback as fb
+from ..common import PROJECT_KEY, content_hash, read_bytes, read_text, rel_path
 from .base import Emit, evidence_of, every, item_ids, last, mtime_iso
 
 GATES = "gates"
-SPECIAL = {"signoff.json", "handover-4-5.json", "test-loop.json", "applicable-rules.json"}
+SPECIAL = {"signoff.json", "handover-4-5.json", "test-loop.json", "applicable-rules.json", fb.FILE_NAME}
 
 
 def _json(path: Path) -> Optional[Dict[str, Any]]:
@@ -157,6 +159,78 @@ def collect(rc: Any, feature_dir: Path, feature: str, chain: List[Dict[str, Any]
                                   "data": {"tool": "archiguard", "name": name, "fingerprint": fp,
                                            "source_file": rel_path(path, root)}},
                         [evidence_of(path, root)]))
+
+    # loop feedback to the domain master design
+    if rc.cfg.get("collectors", "archiguard", "feedback", default=True):
+        out += feedback_emits(rc, feature_dir, feature, chain)
+    return out
+
+
+def feedback_emits(rc: Any, feature_dir: Path, feature: str, chain: List[Dict[str, Any]]) -> List[Emit]:
+    """gates/loop-feedback.json -> report.saved (the snapshot) + feedback.raised / updated / resolved per item.
+
+    The chain is the memory: an unchanged file records nothing; a file that could not be evaluated raises and
+    resolves nothing (only its snapshot is kept)."""
+    root = rc.root
+    path = feature_dir / GATES / fb.FILE_NAME
+    if not path.is_file():
+        return []
+    rec = _json(path)
+    if not rec or rec.get("tool") != "archiguard" or rec.get("kind") != "loop-feedback":
+        return []
+    fp = content_hash(read_bytes(path))
+    if last(chain, ["report.saved"], name=fb.FILE_NAME, fingerprint=fp):
+        return []
+    actor = rc.actor_script("archiguard")
+    at = rec.get("computed_at") or mtime_iso(path)
+    status = rec.get("status")
+    items = [i for i in rec.get("items") or [] if isinstance(i, dict) and i.get("id")]
+    topology = rec.get("topology") if isinstance(rec.get("topology"), dict) else {}
+    context = {"computed_by": rec.get("computed_by"), "computed_commit": rec.get("commit"),
+               "map_version": (rec.get("pins") or {}).get("domain_map"), "home_context": rec.get("home_context"),
+               "file_fingerprint": fp, "source_file": rel_path(path, root)}
+    out: List[Emit] = [Emit(feature, {
+        "kind": "report.saved", "at": at, "actor": actor, "source": "collector:archiguard",
+        "data": {"tool": "archiguard", "name": fb.FILE_NAME, "fingerprint": fp, "source_file": rel_path(path, root),
+                 "status": status, "reason": rec.get("reason"), "computed_by": rec.get("computed_by"),
+                 "computed_commit": rec.get("commit"), "answer": topology.get("answer"),
+                 "items": len(items), "summary": rec.get("summary")}}, [evidence_of(path, root)])]
+    if status not in ("evaluated", "partial"):
+        return out
+    open_now = fb.open_in_chain(chain)
+    decisions = None
+    present = set()
+    for item in items:
+        fid = str(item["id"])
+        present.add(fid)
+        data = dict(fb.item_data(item), fingerprint=fb.item_fingerprint(item), **context)
+        prev = open_now.get(fid)
+        if prev is None:
+            if decisions is None:
+                chains = {PROJECT_KEY: rc.store.load_chain(PROJECT_KEY), "_feature": chain}
+                decisions = fb.latest_decisions(chains)
+            known = fb.known_of(decisions.get(fid))
+            if known:
+                data["known"] = known
+            out.append(Emit(feature, {"kind": "feedback.raised", "at": at, "actor": actor,
+                                      "source": "collector:archiguard", "data": data}))
+            continue
+        before = prev.get("data") or {}
+        if before.get("fingerprint") == data["fingerprint"]:
+            continue
+        data["changed_fields"] = fb.changed_fields(before, data)
+        out.append(Emit(feature, {"kind": "feedback.updated", "at": at, "actor": actor,
+                                  "source": "collector:archiguard", "data": data}))
+    listed = {str(r.get("id")) for r in rec.get("resolved") or [] if isinstance(r, dict) and r.get("id")}
+    for fid, prev in sorted(open_now.items()):
+        if fid in present:
+            continue
+        if fid not in listed and status != "evaluated":
+            continue
+        before = prev.get("data") or {}
+        out.append(Emit(feature, {"kind": "feedback.resolved", "at": at, "actor": actor, "source": "collector:archiguard",
+                                  "data": {"id": fid, "kind": before.get("kind"), "subject": before.get("subject"),
+                                           "raised_event": prev.get("hash"), **context}}))
     return out
 
 

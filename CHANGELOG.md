@@ -12,6 +12,25 @@ All notable changes to auditGuard are documented here. The format follows
   `/speckit.plan`: every command records its hash, and a re-stamp outside a command (a person approving a scope change
   by hand) is an `artefact.changed` event with its author. Until a project adopts this default, the golden check G3
   already reports a commit that touches the stamp outside a recorded command (`specs/**` is explained).
+- **Loop-feedback collector**: the archiGuard collector reads `gates/loop-feedback.json` and records `report.saved`
+  with the snapshot, then `feedback.raised`, `feedback.updated` (with `changed_fields`) and `feedback.resolved` per
+  item. An unchanged file records nothing; a `not-evaluated` file raises and resolves nothing; a `partial` one resolves
+  only what it lists. An item decided before carries `known`. Switch: `collectors.archiguard.feedback` (default on).
+- **Triage**: `auditguard decide feedback:<id> accept | reject | defer --by NAME [--reason T] [--ref KEY]`
+  (`--reason` required for `reject` and `defer`; `--ref` links the tracker key), recorded in the project chain or,
+  with `--feature-dir`, in the feature's chain. The status of an item (`new`, `deferred`, `accepted`, `in-backlog`,
+  `rejected`, `resolved`) is derived from the chains; `new` and `deferred` items are open items.
+- **`auditguard backlog`** (and `/speckit.auditguard.backlog`): the items as backlog candidates, merged across
+  features - Markdown (one table per addressee), CSV with the columns a tracker imports (`External ID, Summary,
+  Description, Priority, Labels, Status, Ref, Features, First sprint, Evidence`) or JSON; `--sprint`, `--status`,
+  `--out`. Read-only. `backlog.priority` and `backlog.labels` shape the CSV.
+- **Views**: a loop-feedback section in `trail.md`, `sprint.md` and `features/<feature>.md` (once any feedback is
+  recorded), `audit/sprints/<S>/loop-feedback.md`, the `feedback` filter and the pending triage in the viewer.
+- **Seal**: `seal.json` counts the sprint's items by status (`feedback`, inside the hash).
+- **Rule** `feedback_triaged_before_close` (off by default; `[WARN]` in record, `[FAIL]` in enforce).
+- `configure` shows whether the loop feedback is recorded; its JSON has `feedback_recorded`.
+- `examples/orders` (regenerated with archiGuard 0.2.0): the loop feedback of 001-place-order, its triage by the lead
+  architect and the domain owner, and the backlog export `audit/backlog-S-2026-22.csv`.
 
 ### Changed
 
@@ -22,6 +41,8 @@ All notable changes to auditGuard are documented here. The format follows
   the project from `specify extension search`, `info` and `update`.
 - CI tests the scopeGuard and archiGuard integrations against scopeGuard 0.5.0 and archiGuard 0.1.2, the versions the
   Guardians bundle 0.1.3 pins.
+- `tools/make-example.py` sets `ARCHIGUARD_TODAY` to the story's clock, so archiGuard's ledger dates and expiry checks
+  follow the story instead of the day the example is generated.
 
 ### Fixed
 

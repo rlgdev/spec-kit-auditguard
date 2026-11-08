@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from . import feedback as fb
 from .collectors.waivers import current_waivers
 from .common import PROJECT_KEY, UNASSIGNED, parse_date, read_json, short, time_key, today
 from .decisions import open_escalations
@@ -20,6 +21,7 @@ KIND_GROUP = {
                "waiver.superseded", "waiver.expired"),
     "decision": ("decision",) + MILESTONES,
     "escalation": ("escalation.raised", "escalation.decided", "escalation.withdrawn"),
+    "feedback": fb.EVENT_KINDS,
     "change": ("artefact.changed", "commit.merged"),
     "session": ("session.started", "session.ended"),
     "sprint": ("sprint.opened", "sprint.closed"),
@@ -100,7 +102,27 @@ def describe(ev: Dict[str, Any]) -> Tuple[str, str]:
             extra.append(f"escalated: {d['escalation']}")
         return "gate verdict", " · ".join([text] + extra)
     if kind == "report.saved":
+        if d.get("name") == fb.FILE_NAME:
+            bits = [f"{d.get('tool')}: {d.get('name')}", f"{d.get('items', 0)} item(s)"]
+            if d.get("answer"):
+                bits.append(f"topology {d['answer']}")
+            if d.get("status") not in (None, "evaluated"):
+                bits.append(str(d.get("status")) + (f" ({d['reason']})" if d.get("reason") else ""))
+            return "loop feedback saved", " · ".join(bits)
         return "report saved", f"{d.get('tool')}: {d.get('name')}"
+    if kind in ("feedback.raised", "feedback.updated"):
+        verb = "raised" if kind == "feedback.raised" else "updated"
+        bits = [f"{d.get('id')} [{d.get('impact')}] {d.get('kind')} {d.get('subject')}"]
+        if d.get("suggestion"):
+            bits.append(str(d["suggestion"]))
+        if kind == "feedback.updated" and d.get("changed_fields"):
+            bits.append("changed: " + ", ".join(d["changed_fields"]))
+        if d.get("known"):
+            k = d["known"]
+            bits.append(f"known: {k.get('verdict')}" + (f" {k['ref']}" if k.get("ref") else "") + (f" ({k['sprint']})" if k.get("sprint") else ""))
+        return f"loop feedback {verb}", " — ".join(bits[:1]) + (" — " + " · ".join(bits[1:]) if bits[1:] else "")
+    if kind == "feedback.resolved":
+        return "loop feedback resolved", f"{d.get('id')} {d.get('kind')} {d.get('subject')} (no longer raised)"
     if kind.startswith("waiver."):
         what = d.get("item") or ", ".join(d.get("rules") or []) or d.get("rule") or ""
         verb = kind.split(".", 1)[1]
@@ -121,7 +143,8 @@ def describe(ev: Dict[str, Any]) -> Tuple[str, str]:
         who = d.get("by") or ""
         role = f" ({d['role']})" if d.get("role") else ""
         reason = f" — \"{d['reason']}\"" if d.get("reason") else ""
-        return f"decision: {d.get('subject')} → {d.get('verdict')}", f"{who}{role}{reason}"
+        ref = f" · ref {d['ref']}" if d.get("ref") else ""
+        return f"decision: {d.get('subject')} → {d.get('verdict')}", f"{who}{role}{reason}{ref}"
     if kind in MILESTONES:
         who = d.get("by") or (ev.get("actor") or {}).get("id") or ""
         extra = f" · {len(d.get('hashes') or {})} artefact(s) hashed" if d.get("hashes") else ""
@@ -179,6 +202,7 @@ class Model:
         self.register = store.register
         self.chains: Dict[str, List[Dict[str, Any]]] = {k: store.load_chain(k) for k in store.chain_keys()}
         self.verification = verification
+        self._feedback: Optional[Dict[str, Dict[str, Any]]] = None
 
     def keys(self) -> List[str]:
         return sorted(self.chains, key=lambda k: (k == PROJECT_KEY, k))
@@ -265,7 +289,8 @@ class Model:
     def open_items(self, key: Optional[str] = None) -> Dict[str, List[str]]:
         keys = [key] if key else self.keys()
         days = int(self.cfg.get("render", "expiring_days") or 30)
-        items: Dict[str, List[str]] = {"escalations": [], "decisions": [], "expiring": [], "commands": [], "stages": []}
+        items: Dict[str, List[str]] = {"escalations": [], "decisions": [], "expiring": [], "commands": [], "stages": [],
+                                       "feedback": []}
         for k in keys:
             chain = self.chains.get(k, [])
             for e in open_escalations(chain):
@@ -287,7 +312,36 @@ class Model:
                 exp = parse_date(rec.get("expires"))
                 if exp and rec.get("status") not in ("revoked", "superseded") and (exp - today()).days <= days:
                     items["expiring"].append(f"{k}: {wid} expires {exp.isoformat()}")
+        for rec in sorted(self.feedback_items().values(), key=fb.sort_key):
+            if rec["status"] not in fb.OPEN_STATUSES:
+                continue
+            if key is not None and key not in [Path(str(f)).name for f in rec.get("features") or []]:
+                continue
+            items["feedback"].append(f"{rec['id']} {rec['status']}: {rec.get('kind')} {rec.get('subject')}")
         return items
+
+    def feedback_items(self) -> Dict[str, Dict[str, Any]]:
+        """Every loop-feedback item with its triage status (merged across features)."""
+        if self._feedback is None:
+            self._feedback = fb.items(self.chains)
+        return self._feedback
+
+    def feedback_in(self, key: Optional[str] = None, sprint: Optional[str] = None) -> List[Dict[str, Any]]:
+        """The items of a feature (raised there) and / or a sprint (an event or a decision there), sorted."""
+        out = []
+        for rec in self.feedback_items().values():
+            if key is not None and key not in [Path(str(f)).name for f in rec.get("features") or []]:
+                continue
+            if sprint is not None:
+                evs = [e for e in self.chains.get(key, []) if e.get("_sprint_dir") == sprint and
+                       ((e.get("kind") in fb.EVENT_KINDS and (e.get("data") or {}).get("id") == rec["id"]) or
+                        (fb.is_feedback_decision(e) and fb.decision_id(e) == rec["id"]))] if key is not None else None
+                if key is not None and not evs:
+                    continue
+                if key is None and not fb.in_sprint(rec, sprint):
+                    continue
+            out.append(rec)
+        return sorted(out, key=fb.sort_key)
 
     def label(self, ev: Dict[str, Any]) -> Optional[str]:
         if not self.verification:

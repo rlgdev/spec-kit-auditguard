@@ -84,6 +84,7 @@ collectors:
     enabled: auto
     version: ">=0.1,<0.3"
     ledger: .specify/archiguard/ledger.jsonl
+    feedback: true                  # record gates/loop-feedback.json: feedback.raised / updated / resolved (archiGuard 0.2+)
   workflow:
     enabled: true
     runs: .specify/workflows/runs   # Spec Kit workflow runs: every gate verdict is a human decision
@@ -121,6 +122,12 @@ rules:
   commands_closed_before_close: true
   no_unassigned_events: true
   anchored_before_export: false     # export refuses a sprint whose seal is not anchored
+  feedback_triaged_before_close: false   # opt-in: every loop-feedback item triaged (decide feedback:<id>) before close
+
+# `auditguard backlog`: the loop-feedback items as backlog candidates for the tracker (CSV / Markdown / JSON).
+backlog:
+  priority: { high: High, medium: Medium, low: Low }   # impact -> the tracker's priority (CSV column Priority)
+  labels: [loop-feedback]                             # labels on every row, before the kind and the contexts
 
 # The guard (pre_tool_use): agents never change the trail and never record a person's decision. With archiGuard
 # installed its edit guard protects the trail too (the Guardians bundle wires that); CODEOWNERS is the guarantee.

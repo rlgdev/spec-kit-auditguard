@@ -35,6 +35,12 @@ def test_example_story_verifies(tmp_path):
     kinds = [json.loads(l)["kind"] for p in (repo / "audit/sprints").glob("*/001-place-order/journal.jsonl")
              for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
     for kind in ("escalation.raised", "escalation.decided", "design.signed", "waiver.added", "artefact.changed",
-                 "implement.approved", "pr.approved", "gate.verdict"):
+                 "implement.approved", "pr.approved", "gate.verdict", "feedback.raised"):
         assert kind in kinds, kind
+    # the loop feedback archiGuard wrote after coding, triaged by the lead architect in the project chain
+    project = [json.loads(l) for p in (repo / "audit/sprints").glob("*/_project/journal.jsonl")
+               for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
+    triage = {(e["data"]["subject"], e["data"]["verdict"], e["data"].get("ref")) for e in project if e["kind"] == "decision"}
+    assert ("feedback:LF-2ba4e67d", "accept", "ARCH-77") in triage and ("feedback:LF-831ba84c", "defer", None) in triage
+    assert "LF-2ba4e67d" in (repo / "audit/backlog-S-2026-22.csv").read_text(encoding="utf-8")
     assert (out / "audit/viewer/index.html").is_file() and not (out / ".git").exists()

@@ -49,12 +49,23 @@ def build_parser() -> argparse.ArgumentParser:
     _common(p)
 
     p = sub.add_parser("decide", help="record a decision of a person (human only)")
-    p.add_argument("subject", help="design | implement | pr | spec-change | escalation:<note or id> | gate:<step-id>")
+    p.add_argument("subject", help="design | implement | pr | spec-change | escalation:<note or id> | gate:<step-id> | "
+                                   "feedback:<LF-id>")
     p.add_argument("verdict", help="approve | reject | accept | defer")
     p.add_argument("--by", help="the person who decided")
     p.add_argument("--role", help="e.g. 'tech lead', 'lead architect'")
-    p.add_argument("--reason")
-    p.add_argument("--feature-dir")
+    p.add_argument("--reason", help="why (required to reject or defer a loop-feedback item)")
+    p.add_argument("--ref", help="feedback:<id> only: the tracker key of the backlog item (accept --ref ARCH-77)")
+    p.add_argument("--feature-dir", help="the feature's chain (default for feedback:<id>: the project chain)")
+    _common(p)
+
+    p = sub.add_parser("backlog", help="the loop-feedback items as backlog candidates (read-only)")
+    p.add_argument("--sprint", help="only the items with an event or a decision in this sprint")
+    p.add_argument("--all", action="store_true", help="every sprint (the default)")
+    p.add_argument("--status", help="comma list of new, deferred, accepted, in-backlog, rejected, resolved - or all "
+                                    "(default: new,accepted)")
+    p.add_argument("--format", choices=["md", "csv", "json"], default="md")
+    p.add_argument("--out", help="write to this file instead of the terminal")
     _common(p)
 
     p = sub.add_parser("note", help="add a note to the trail (human only)")
@@ -286,12 +297,32 @@ def _dispatch(root: Path, cfg: Any, args: argparse.Namespace) -> int:
 
     if cmd == "decide":
         from .decisions import decide
-        ev, notes = decide(root, cfg, args.subject, args.verdict, args.by, args.role, args.reason, args.feature_dir)
+        ev, notes = decide(root, cfg, args.subject, args.verdict, args.by, args.role, args.reason, args.feature_dir,
+                           tracker_ref=args.ref)
         _render(root, cfg)
         for n in notes:
             print(f"NOTE: {n}")
         print(f"auditGuard: recorded #{ev['seq']} {ev['kind']} {(ev.get('data') or {}).get('subject')} -> "
-              f"{(ev.get('data') or {}).get('verdict')} by {(ev.get('actor') or {}).get('id')} ({ev['sprint']})")
+              f"{(ev.get('data') or {}).get('verdict')} by {(ev.get('actor') or {}).get('id')} ({ev['sprint']})"
+              + (f" · ref {(ev.get('data') or {})['ref']}" if (ev.get("data") or {}).get("ref") else ""))
+        return EXIT_OK
+
+    if cmd == "backlog":
+        from .backlog import parse_statuses, render as render_backlog
+        from .store import Store
+        if args.sprint and args.all:
+            raise AuditGuardError("backlog takes --sprint S or --all, not both")
+        fmt = "json" if args.json and args.format == "md" else args.format
+        text = render_backlog(Store(root, cfg), cfg, sprint=args.sprint, statuses=parse_statuses(args.status), fmt=fmt)
+        if args.out:
+            out = Path(args.out)
+            if not out.is_absolute():
+                out = Path.cwd() / out
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(text, encoding="utf-8", newline="")
+            print(f"auditGuard {__version__} | backlog | {rel_path(out, root) if str(out).startswith(str(root)) else out}")
+        else:
+            sys.stdout.write(text)
         return EXIT_OK
 
     if cmd == "note":

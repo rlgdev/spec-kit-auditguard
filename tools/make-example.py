@@ -10,7 +10,8 @@ The story (clock faked, so the trail spans two sprints):
              architect decides · a ledger waiver is approved · /speckit.analyze · the tech lead signs the design ·
              the sprint is closed, sealed and anchored
   S-2026-22  /speckit.implement repairs two fitness violations · a person edits the signed plan outside any command ·
-             /speckit.converge · implement approved · 002-refunds is specified and planned with a deferral · a workflow
+             /speckit.converge · implement approved · the lead architect triages the loop feedback (one item into the
+             backlog, one deferred) · 002-refunds is specified and planned with a deferral · a workflow
              gate is approved · the pull request of 001 is approved
 """
 
@@ -57,7 +58,8 @@ class Story:
         env = dict(os.environ)
         env.update({"FAKE_NOW": self.now, "AUDITGUARD_NOW": self.now, "GIT_AUTHOR_DATE": self.now,
                     "GIT_COMMITTER_DATE": self.now, "PYTHONPATH": str(self.clock_dir), "AUDITGUARD_ACTOR": "",
-                    "CI": "", "GITHUB_ACTIONS": "", "SPECIFY_FEATURE_DIRECTORY": "", "TZ": "Europe/Warsaw"})
+                    "CI": "", "GITHUB_ACTIONS": "", "SPECIFY_FEATURE_DIRECTORY": "", "TZ": "Europe/Warsaw",
+                    "ARCHIGUARD_TODAY": self.now[:10]})   # archiGuard's ledger dates and expiry checks follow the story
         env.pop("AUDITGUARD_CONTEXT", None)
         env.update(extra)
         return env
@@ -338,6 +340,17 @@ class Story:
         self.at("2026-10-21T15:00:00+02:00")
         self.au("decide", "implement", "approve", "--by", "Tech lead", "--role", "tech lead",
                 "--reason", "fitness green, converge clean; the plan note is editorial", "--feature-dir", f)
+        # the lead architect triages the loop feedback archiGuard wrote after coding (evidence, never a gate)
+        self.at("2026-10-21T15:30:00+02:00")
+        self.au("collect", "--feature-dir", f)
+        self.au("decide", "feedback:LF-2ba4e67d", "accept", "--by", "Lead architect", "--role", "lead architect",
+                "--reason", "declare the deployable of orders in domain map 1.5.0")
+        self.au("decide", "feedback:LF-831ba84c", "defer", "--by", "Orders domain owner", "--role", "domain owner",
+                "--reason", "Shipment: decide with the fulfilment team in the next sprint")
+        self.au("backlog", "--status", "accepted", "--format", "csv", "--out", "audit/backlog-S-2026-22.csv")
+        self.at("2026-10-21T15:45:00+02:00")
+        self.au("decide", "feedback:LF-2ba4e67d", "accept", "--ref", "ARCH-77", "--by", "Lead architect",
+                "--role", "lead architect", "--reason", "created in the architecture backlog")
         self.commit("T000 UC-001 audit trail")
         self.git("push", "-q", "origin", "001-place-order")
 

@@ -29,7 +29,7 @@ unknown keys are errors, so a typo never switches something off silently.
 | `collectors.git.project_artefacts` | `.specify/memory/constitution.md` | artefacts of the project chain |
 | `collectors.git.code` | `src/** app/** lib/** tests/** test/**` | documentation of the code paths (the code tracked for changes is `golden.git.explain_paths` outside `specs/`) |
 | `collectors.scopeguard` | `enabled: auto`, `version: ">=0.4,<0.6"`, `report:` *profile* (light `false`, full `true`), `timeout: 120` | `report` runs `scopeguard.py report --json` at every hook for the coverage per phase; the history files, the report Markdown and the escalation notes scopeGuard writes are read either way |
-| `collectors.archiguard` | `enabled: auto`, `version: ">=0.1,<0.3"`, `ledger: .specify/archiguard/ledger.jsonl` | |
+| `collectors.archiguard` | `enabled: auto`, `version: ">=0.1,<0.3"`, `ledger: .specify/archiguard/ledger.jsonl`, `feedback: true` | `feedback` records archiGuard's `gates/loop-feedback.json` (archiGuard 0.2+) as `feedback.raised` / `updated` / `resolved` |
 | `collectors.workflow` | `enabled: true`, `runs: .specify/workflows/runs` | |
 | `collectors.<name>` | - | a plug-in: `command`, `timeout` (`60`), `enabled` (`true`); `version` is accepted and not checked ([collectors.md](collectors.md)) |
 | `golden.git.enabled` | `true` | accepted; not read yet - the git checks run whenever the project is a git repository |
@@ -43,7 +43,9 @@ unknown keys are errors, so a typo never switches something off silently.
 | `actors.human` | `auto` | `git user.name`; `--by` and `AUDITGUARD_ACTOR` win |
 | `actors.agent` | `auto` | the integration in `.specify/init-options.json` |
 | `actors.ci_env` | `GITHUB_ACTOR`, ... | variables naming the CI actor |
-| `rules.*` | all on except `anchored_before_export` | the completeness rules of `check` / `sprint close` |
+| `rules.*` | all on except `anchored_before_export` and `feedback_triaged_before_close` | the completeness rules of `check` / `sprint close` |
+| `backlog.priority` | `{high: High, medium: Medium, low: Low}` | `auditguard backlog`: an item's impact -> the tracker priority (CSV column `Priority`) |
+| `backlog.labels` | `[loop-feedback]` | `auditguard backlog`: labels on every row, before the kind and the contexts the item names |
 | `guard.enabled`, `guard.readonly`, `guard.human_only` | *profile* (light `false`, full `true`), `audit/**` + the extension, decide / note / sprint open / sprint close / anchor | the `pre_tool_use` guard (the Guardians bundle also puts `audit/**` under archiGuard's edit guard) |
 
 ## Overrides
@@ -67,3 +69,4 @@ unknown keys are errors, so a typo never switches something off silently.
 | `commands_closed_before_close` | a command started and never finished or was closed |
 | `no_unassigned_events` | events were recorded while no sprint was open |
 | `anchored_before_export` | (off by default) `export` refuses a sprint whose seal is not anchored |
+| `feedback_triaged_before_close` | (off by default) a loop-feedback item of the sprint is still `new` - nobody ran `auditguard decide feedback:<id> accept\|reject\|defer` |

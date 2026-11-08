@@ -278,6 +278,9 @@ def run_configure(root: Path, cfg: Any, dry_run: bool) -> Tuple[str, Dict[str, A
             ok = version_satisfies(version, conf.get("version") or "")
             state = f"{version} " + ("ok" if ok else f"UNSUPPORTED (wanted {conf.get('version')})") + \
                     ("" if cfg.collector_enabled(name) else " - disabled")
+        if name == "archiguard" and version is not None:
+            state += " · loop feedback " + ("recorded" if cfg.get("collectors", "archiguard", "feedback", default=True)
+                                            else "not recorded (collectors.archiguard.feedback: false)")
         lines.append(f"    {name:<11} : {state}")
     runs = cfg.path(cfg.get("collectors", "workflow", "runs"))
     lines.append(f"    workflow    : {'on' if cfg.collector_enabled('workflow') else 'off'}"
@@ -321,4 +324,5 @@ def run_configure(root: Path, cfg: Any, dry_run: bool) -> Tuple[str, Dict[str, A
         lines.append(f"  NOTE: {n}")
     return "\n".join(lines), {"profile": cfg.profile, "integration": integration, "mode": cfg.mode, "hooks": found,
                               "switches": switches, "events": wanted, "events_wired": present, "changes": changes,
+                              "feedback_recorded": bool(cfg.get("collectors", "archiguard", "feedback", default=True)),
                               "dry_run": dry_run}

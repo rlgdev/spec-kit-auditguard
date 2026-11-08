@@ -8,6 +8,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from . import feedback as fb
+from .backlog import sprint_view
 from .common import PROJECT_KEY, UNASSIGNED, read_json, short, write_text
 from .model import Model, actor_label, describe, gate_text, hhmm, is_flagged
 
@@ -74,6 +76,9 @@ def open_items_lines(model: Model, key: Optional[str]) -> List[str]:
         parts.append(f"{len(items['commands'])} command(s) still open")
     if items["expiring"]:
         parts.append("; ".join(i.split(': ', 1)[-1] for i in items["expiring"][:3]))
+    if items.get("feedback"):
+        deferred = sum(1 for i in items["feedback"] if " deferred:" in i)
+        parts.append(f"{len(items['feedback'])} loop-feedback item(s) untriaged" + (f" ({deferred} deferred)" if deferred else ""))
     return parts
 
 
@@ -205,6 +210,11 @@ def _sections(model: Model, key: Optional[str], sprint: Optional[str], with_feat
     else:
         lines.append("No gate report collected.")
     lines.append("")
+    if model.feedback_items():          # only once archiGuard has fed back anything: no empty section otherwise
+        if with_feature:
+            lines += feedback_section(model, None, sprint, "## Loop feedback to the domain master design", with_feature=True)
+        elif key != PROJECT_KEY:
+            lines += feedback_section(model, key, sprint, "## Loop feedback")
     lines.append("## Changes outside recorded commands")
     lines.append("")
     oob = model.oob(key, sprint)
@@ -225,6 +235,32 @@ def _sections(model: Model, key: Optional[str], sprint: Optional[str], with_feat
         lines += table(rows, h)
     else:
         lines.append("None.")
+    lines.append("")
+    return lines
+
+
+def feedback_section(model: Model, key: Optional[str], sprint: Optional[str], heading: str,
+                     with_feature: bool = False) -> List[str]:
+    """The loop-feedback items (from archiGuard's gates/loop-feedback.json) with their triage status now."""
+    lines = [heading, ""]
+    recs = model.feedback_in(key, sprint)
+    if not recs:
+        return lines + ["No loop feedback recorded.", ""]
+    rows = []
+    for r in recs:
+        status = r["status"] + (f" {r['ref']}" if r.get("ref") else "")
+        row = [r["id"], r.get("impact") or "", r.get("kind") or "", r.get("subject") or "", r.get("suggestion") or "",
+               ", ".join(fb.for_roles(r)), status]
+        if with_feature:
+            row.insert(6, ", ".join(Path(str(f)).name for f in r.get("features") or []))
+        rows.append(row)
+    h = ["Id", "Impact", "Kind", "Subject", "Suggestion for the next iteration", "For", "Status"]
+    if with_feature:
+        h.insert(6, "Features")
+    lines += table(rows, h)
+    lines.append("")
+    lines.append("Triage: `auditguard decide feedback:<id> accept|reject|defer --by <name> [--ref <tracker key>]` · "
+                 "backlog: `auditguard backlog`")
     lines.append("")
     return lines
 
@@ -309,6 +345,8 @@ def render_feature(model: Model, key: str) -> str:
     else:
         lines.append("None.")
     lines.append("")
+    if model.feedback_in(key):
+        lines += feedback_section(model, key, None, "## Loop feedback")
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -369,6 +407,9 @@ def render_all(store: Any, cfg: Any, *, keys: Optional[List[str]] = None, sprint
         if not folder.is_dir():
             continue
         _write_if_changed(folder / "sprint.md", render_sprint(model, sprint), written)
+        view = sprint_view(store, cfg, sprint)
+        if view is not None:
+            _write_if_changed(folder / "loop-feedback.md", view, written)
         for key in model.keys():
             if keys is not None and key not in keys:
                 continue

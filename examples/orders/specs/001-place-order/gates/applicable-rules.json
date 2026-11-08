@@ -1,6 +1,6 @@
 {
   "rulebook": "acme-standards@v2026.10.1",
-  "lock": "sha256:b9afb89e07088d950d48aa197ba10ecfb0597a91024290bb93acee325863eff2",
+  "lock": "sha256:999b10511cce4ddd5d61ab8a8d0f3f82555312fc126a3ed4585b48e9b8a38bd7",
   "stacks": [
     "java"
   ],

@@ -3,7 +3,7 @@
   "role": "tech lead",
   "at": "2026-10-08T14:00:00",
   "feature": "specs/001-place-order",
-  "commit": "33d8198b9a8b105ee5eb945636dded8e58a32e23",
+  "commit": "d956b245aaa95018afd015a77fd28dc2609c10fa",
   "dirty": true,
   "hashes": {
     "spec.md": "803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e",
@@ -12,11 +12,11 @@
     "tasks.md": "c99a4786c6d89a2ef09f45b9e0e3e44ca3929abf12c2e2266e44389514a6e615",
     "handover.yml": "85df34915da92549df237e52a227f9fc0664eb0e5c94f84abc123ad7e17c6ba8",
     "contracts/orders.yaml": "779837d14035855493df15a9caa53260335e08a027842f13265bdcfef4fb7fa3",
-    "gates/applicable-rules.json": "3739efdeca6386a7e62db8894c928ffb307d6436cec6e8b28ba58a8d65a91e60"
+    "gates/applicable-rules.json": "bc31ab58c9570273f5b860f2908d319bda33fc44704646ab9f08bf7ed10d054f"
   },
   "pins": {
     "rulebook": "acme-standards@v2026.10.1",
-    "lock": "sha256:b9afb89e07088d950d48aa197ba10ecfb0597a91024290bb93acee325863eff2",
+    "lock": "sha256:999b10511cce4ddd5d61ab8a8d0f3f82555312fc126a3ed4585b48e9b8a38bd7",
     "domain_map": "1.4.0",
     "spec": "3#803b2ac1ecefaf1b7cba4922a6146300511a013ead43b4ec8c96d574f8a4c71e"
   },
@@ -25,5 +25,5 @@
     "speckit.tasks": "pass",
     "A3.6": "pass"
   },
-  "archiguard": "0.1.0"
+  "archiguard": "0.2.0"
 }

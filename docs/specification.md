@@ -1,8 +1,21 @@
 # auditGuard for Spec Kit — Specification v1.0 (ready to implement)
 
-> **Status:** implemented in auditGuard 0.1.0; 0.2.0 adds the profiles (A17-A19). The amendments below were made
-> while implementing and testing against Spec Kit 1.0.1 / 1.0.13, scopeGuard 0.4.x and archiGuard 0.1.x; where the
-> body below differs, the amendment wins.
+> **Status:** implemented in auditGuard 0.1.0; 0.2.0 adds the profiles (A17-A19); 0.3.0 records the loop feedback
+> (A20-A22). The amendments below were made while implementing and testing against Spec Kit 1.0.1 / 1.0.13,
+> scopeGuard 0.4.x and archiGuard 0.1.x / 0.2.x; where the body below differs, the amendment wins.
+
+## Amendments in the 0.3.0 implementation (loop feedback)
+
+The loop feedback - archiGuard's evidence of what an implementation did that the domain master design does not
+describe - is specified across the family in archiGuard's
+[docs/loop-feedback-specification.md](https://github.com/rlgdev/spec-kit-archiguard/blob/main/docs/loop-feedback-specification.md)
+(§3.7, §3.8, §5.4-§5.6, §6.1). auditGuard implements its FR-4xx and FR-5xx as follows.
+
+| # | Requirement | Amendment | Why |
+|---|-------------|-----------|-----|
+| A20 | FR-401, FR-403, §5.2 (event kinds) | Three new core kinds `feedback.raised`, `feedback.updated`, `feedback.resolved`, collected from `gates/loop-feedback.json` by the archiGuard collector (`collectors.archiguard.feedback`, default `true`), plus a `report.saved` (`name: loop-feedback.json`) carrying the snapshot. The feedback events refer to that snapshot by `file_fingerprint` instead of carrying it again; `occurrences` is the count. | One snapshot per file version; the events stay small. |
+| A21 | FR-501, FR-502, FR-505, §7.4 | `decide` accepts `feedback:<id>` (`accept \| reject \| defer`, `--reason` required for `reject` and `defer`, new `--ref <tracker key>`), recorded in the `_project` chain unless `--feature-dir` is given. The triage status (`new`, `deferred`, `accepted`, `in-backlog`, `rejected`, `resolved`) is derived from the chains, never stored. New read-only command `backlog` (Markdown, CSV, JSON) and agent command `/speckit.auditguard.backlog` (29 commands). | A decision about the domain master design is project-level; deriving the status keeps the journal the only record. |
+| A22 | FR-3xx (seal), FR-6xx (rules) | `seal.json` gains `feedback: {new, deferred, accepted, in_backlog, rejected, resolved}` (the sprint's items, inside the hash); `sprint close` and `render` write `audit/sprints/<S>/loop-feedback.md` when the sprint has items. The rule `feedback_triaged_before_close` is off by default. The views (`trail.md`, `sprint.md`, `features/*.md`) show a loop-feedback section only once any feedback is recorded. | The feedback is evidence, never a gate; projects without archiGuard 0.2 see no change in their views. |
 
 ## Amendments in the 0.2.0 implementation
 

@@ -11,7 +11,7 @@ permissions:
 
 env:
   SCOPEGUARD_TAG: v0.5.0
-  ARCHIGUARD_TAG: v0.1.2
+  ARCHIGUARD_TAG: v0.3.0   # the scope stamp and the loop feedback; main until the tag is released
 
 jobs:
   test:
@@ -39,7 +39,12 @@ jobs:
         shell: bash
         run: |
           git clone -q --depth 1 --branch "$SCOPEGUARD_TAG" https://github.com/rlgdev/spec-kit-scopeguard "$RUNNER_TEMP/scopeguard"
-          git clone -q --depth 1 --branch "$ARCHIGUARD_TAG" https://github.com/rlgdev/spec-kit-archiguard "$RUNNER_TEMP/archiguard"
+          if git ls-remote --exit-code --tags https://github.com/rlgdev/spec-kit-archiguard "refs/tags/$ARCHIGUARD_TAG" >/dev/null 2>&1; then
+            git clone -q --depth 1 --branch "$ARCHIGUARD_TAG" https://github.com/rlgdev/spec-kit-archiguard "$RUNNER_TEMP/archiguard"
+          else
+            echo "::notice::archiGuard $ARCHIGUARD_TAG is not released yet - testing against main"
+            git clone -q --depth 1 https://github.com/rlgdev/spec-kit-archiguard "$RUNNER_TEMP/archiguard"
+          fi
       - name: pytest
         shell: bash
         run: |
