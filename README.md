@@ -268,7 +268,7 @@ sealed folder: a late event goes to the open sprint with `redirected_from`.
 
 ## Loop feedback: from the trail to the backlog
 
-After coding, archiGuard (0.2+) compares what a feature did with the domain master design and writes
+After coding, archiGuard (0.3+) compares what a feature did with the domain master design and writes
 `specs/<feature>/gates/loop-feedback.json`: code no context maps, a new build unit (a new service?), a topology the
 map does not declare, a dependency only a waiver lets through, terms outside the glossary - each item with a short
 suggestion for the next iteration and the person it is for. It is evidence, never a gate. auditGuard records it and

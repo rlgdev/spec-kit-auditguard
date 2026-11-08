@@ -6,6 +6,17 @@ All notable changes to auditGuard are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-08
+
+The loop feedback: archiGuard 0.3 reports, after coding, what a feature did that the domain master design does not
+describe (code no context maps, a new build unit, an undeclared topology, a dependency only a waiver lets through, ...),
+each item with a short suggestion for the next iteration. auditGuard records it as evidence and hands it over as
+backlog candidates. Nothing of it can block a command
+([README: Loop feedback](README.md#loop-feedback-from-the-trail-to-the-backlog);
+[specification](https://github.com/rlgdev/spec-kit-archiguard/blob/main/docs/loop-feedback-specification.md)).
+Also in this release: scopeGuard 0.5's scope stamp is recorded as a design artefact, and auditGuard keeps working
+next to the project's other extensions (catalog instructions, CRLF, Spec Kit's folded YAML).
+
 ### Added
 
 - `collectors.git.artefacts` includes `scopeguard-stamp.json`, the scope stamp scopeGuard 0.5 writes at the first
@@ -34,13 +45,12 @@ All notable changes to auditGuard are documented here. The format follows
 
 ### Changed
 
-- CI runs the integration tests against scopeGuard 0.4.1 and archiGuard 0.1.1, the versions the Guardians
-  bundle 0.1.1 pins (was 0.4.0 and 0.1.0).
 - The catalog install instructions add Spec Kit's `default` and `community` catalogs before the auditGuard catalog:
   a project catalog file replaces Spec Kit's own catalogs, and the earlier instructions hid every other extension of
   the project from `specify extension search`, `info` and `update`.
-- CI tests the scopeGuard and archiGuard integrations against scopeGuard 0.5.0 and archiGuard 0.1.2, the versions the
-  Guardians bundle 0.1.3 pins.
+- CI tests the scopeGuard and archiGuard integrations against scopeGuard 0.5.0 and archiGuard 0.3.0, the versions the
+  Guardians bundle 0.2.0 pins (archiGuard's main until its tag exists).
+- `collectors.archiguard.version` accepts archiGuard `>=0.1,<0.4` (was `<0.3`): 0.3.0 ships the loop feedback.
 - `tools/make-example.py` sets `ARCHIGUARD_TODAY` to the story's clock, so archiGuard's ledger dates and expiry checks
   follow the story instead of the day the example is generated.
 

@@ -33,7 +33,7 @@ GAP = item("LF-c90bb238", "map-gap", "customers:no-code", "low", "Declare the co
 
 def feedback_file(items: List[dict], status: str = "evaluated", resolved: Optional[List[dict]] = None,
                   feature: str = F1, at: str = "2026-10-07T10:00:00+02:00", reason: Optional[str] = None) -> str:
-    doc = {"tool": "archiguard", "kind": "loop-feedback", "schema": 1, "guardrail_version": "0.2.0", "feature": feature,
+    doc = {"tool": "archiguard", "kind": "loop-feedback", "schema": 1, "guardrail_version": "0.3.0", "feature": feature,
            "status": status, "computed_at": at, "computed_by": "implement-b", "commit": None, "base": "main",
            "repository": "acme-shop", "pins": {"domain_map": "1.4.0"}, "home_context": "orders",
            "topology": {"answer": "mixed", "units": []},
@@ -116,7 +116,7 @@ def test_collector_switch_off(ag_project):
     write(p, [item()])
     p.ag("collect")
     assert not fb_events(p)
-    p.write(".specify/extensions/archiguard/extension.yml", 'extension:\n  id: archiguard\n  version: "0.2.0"\n')
+    p.write(".specify/extensions/archiguard/extension.yml", 'extension:\n  id: archiguard\n  version: "0.3.0"\n')
     assert "loop feedback not recorded" in p.ag("configure", "--dry-run").stdout
     assert json.loads(p.ag("configure", "--dry-run", "--json").stdout)["feedback_recorded"] is False
 

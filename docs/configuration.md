@@ -29,7 +29,7 @@ unknown keys are errors, so a typo never switches something off silently.
 | `collectors.git.project_artefacts` | `.specify/memory/constitution.md` | artefacts of the project chain |
 | `collectors.git.code` | `src/** app/** lib/** tests/** test/**` | documentation of the code paths (the code tracked for changes is `golden.git.explain_paths` outside `specs/`) |
 | `collectors.scopeguard` | `enabled: auto`, `version: ">=0.4,<0.6"`, `report:` *profile* (light `false`, full `true`), `timeout: 120` | `report` runs `scopeguard.py report --json` at every hook for the coverage per phase; the history files, the report Markdown and the escalation notes scopeGuard writes are read either way |
-| `collectors.archiguard` | `enabled: auto`, `version: ">=0.1,<0.3"`, `ledger: .specify/archiguard/ledger.jsonl`, `feedback: true` | `feedback` records archiGuard's `gates/loop-feedback.json` (archiGuard 0.2+) as `feedback.raised` / `updated` / `resolved` |
+| `collectors.archiguard` | `enabled: auto`, `version: ">=0.1,<0.4"`, `ledger: .specify/archiguard/ledger.jsonl`, `feedback: true` | `feedback` records archiGuard's `gates/loop-feedback.json` (archiGuard 0.3+) as `feedback.raised` / `updated` / `resolved` |
 | `collectors.workflow` | `enabled: true`, `runs: .specify/workflows/runs` | |
 | `collectors.<name>` | - | a plug-in: `command`, `timeout` (`60`), `enabled` (`true`); `version` is accepted and not checked ([collectors.md](collectors.md)) |
 | `golden.git.enabled` | `true` | accepted; not read yet - the git checks run whenever the project is a git repository |

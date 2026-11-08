@@ -82,9 +82,9 @@ collectors:
     timeout: 120
   archiguard:
     enabled: auto
-    version: ">=0.1,<0.3"
+    version: ">=0.1,<0.4"
     ledger: .specify/archiguard/ledger.jsonl
-    feedback: true                  # record gates/loop-feedback.json: feedback.raised / updated / resolved (archiGuard 0.2+)
+    feedback: true                  # record gates/loop-feedback.json: feedback.raised / updated / resolved (archiGuard 0.3+)
   workflow:
     enabled: true
     runs: .specify/workflows/runs   # Spec Kit workflow runs: every gate verdict is a human decision

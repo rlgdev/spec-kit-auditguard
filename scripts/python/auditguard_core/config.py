@@ -42,7 +42,7 @@ DEFAULTS: Dict[str, Any] = {
             "code": ["src/**", "app/**", "lib/**", "tests/**", "test/**"],
         },
         "scopeguard": {"enabled": "auto", "version": ">=0.4,<0.6", "report": True, "timeout": 120},
-        "archiguard": {"enabled": "auto", "version": ">=0.1,<0.3", "ledger": ".specify/archiguard/ledger.jsonl",
+        "archiguard": {"enabled": "auto", "version": ">=0.1,<0.4", "ledger": ".specify/archiguard/ledger.jsonl",
                        "feedback": True},
         "workflow": {"enabled": True, "runs": ".specify/workflows/runs"},
     },

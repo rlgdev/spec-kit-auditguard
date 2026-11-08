@@ -39,7 +39,7 @@ namespaces the kind (`jira.issue.created`) unless it is a core kind (`decision`,
 
 ## Loop feedback
 
-`gates/loop-feedback.json` (archiGuard 0.2+) is evidence, not a step verdict (it has no `step` key). On a new file
+`gates/loop-feedback.json` (archiGuard 0.3+) is evidence, not a step verdict (it has no `step` key). On a new file
 fingerprint the collector records `report.saved` with the snapshot, then compares the items with the chain:
 `feedback.raised` for an id not open in the feature's chain, `feedback.updated` when the item's fingerprint (its
 canonical JSON without `first_seen`) changed, `feedback.resolved` for an open id the file lists in `resolved[]` or that
