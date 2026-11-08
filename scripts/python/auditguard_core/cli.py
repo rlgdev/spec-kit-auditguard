@@ -319,7 +319,8 @@ def _dispatch(root: Path, cfg: Any, args: argparse.Namespace) -> int:
             if not out.is_absolute():
                 out = Path.cwd() / out
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(text, encoding="utf-8", newline="")
+            with open(out, "w", encoding="utf-8", newline="") as handle:   # Path.write_text has no newline= before 3.10
+                handle.write(text)
             print(f"auditGuard {__version__} | backlog | {rel_path(out, root) if str(out).startswith(str(root)) else out}")
         else:
             sys.stdout.write(text)

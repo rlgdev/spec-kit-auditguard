@@ -56,6 +56,7 @@ next to the project's other extensions (catalog instructions, CRLF, Spec Kit's f
 
 ### Fixed
 
+- `backlog --out` runs on Python 3.9 (it used `Path.write_text(newline=...)`, which needs 3.10).
 - The built-in YAML reader (used without PyYAML) reads quoted scalars folded across lines, as PyYAML's dump writes
   long ones in Spec Kit's `.specify/extensions.yml`. Without PyYAML, `configure` refused to write the hook registry
   ("the result would not parse") in every project that also had scopeGuard or archiGuard installed.
